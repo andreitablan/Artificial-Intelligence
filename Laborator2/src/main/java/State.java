@@ -4,7 +4,7 @@ import java.util.List;
 
 public class State {
     List<Integer> list = new ArrayList<Integer>();
-    List<Integer> isVisited[]=new List[20];
+    List<List<Integer>> isVisited= new ArrayList<>();
     int index=0;
 
     public State() {}
@@ -22,23 +22,25 @@ public class State {
     }
 
     List<Integer> share(List<Integer> list, int fromCup, int toCup) {
-        if (validateShare(list, fromCup, toCup)) {
+        List<Integer> auxList=new ArrayList<>();
+        auxList.addAll(list);
+        if (validateShare(auxList, fromCup, toCup)) {
             if (fromCup == 1) {
                 int waterBuffer = 0;
-                if (list.get(2) < (list.get(1) - list.get(3))) {
-                    waterBuffer = list.get(2);
-                } else waterBuffer = list.get(1) - list.get(3);
-                list.set(2, list.get(2) - waterBuffer);
-                list.set(3, waterBuffer + list.get(3));
+                if (auxList.get(2) < (auxList.get(1) - auxList.get(3))) {
+                    waterBuffer = auxList.get(2);
+                } else waterBuffer = auxList.get(1) - auxList.get(3);
+                auxList.set(2, auxList.get(2) - waterBuffer);
+                auxList.set(3, waterBuffer + auxList.get(3));
             } else if (fromCup == 2) {
                 int waterBuffer = 0;
-                if (list.get(3) < (list.get(0) - list.get(2))) {
-                    waterBuffer = list.get(3);
-                } else waterBuffer = list.get(0) - list.get(2);
-                list.set(3, list.get(3) - waterBuffer);
-                list.set(2, waterBuffer+list.get(2));
+                if (auxList.get(3) < (auxList.get(0) - auxList.get(2))) {
+                    waterBuffer = auxList.get(3);
+                } else waterBuffer = auxList.get(0) - auxList.get(2);
+                auxList.set(3, auxList.get(3) - waterBuffer);
+                auxList.set(2, waterBuffer+auxList.get(2));
             }
-            return list;
+            return auxList;
         }
         return list;
     }
@@ -61,13 +63,16 @@ public class State {
     }
 
     List<Integer> fill(List<Integer> list, int whichCup) {
+        List<Integer> auxList=new ArrayList<>();
+        auxList.addAll(list);
+
         if (validateFill(list, whichCup)) {
             if (whichCup == 1) {
-                list.set(2,list.get(0));
+                auxList.set(2,list.get(0));
             } else {
-                list.set(3,list.get(1));
+                auxList.set(3,list.get(1));
             }
-            return list;
+            return auxList;
         }
         return list;
     }
@@ -82,13 +87,15 @@ public class State {
     }
 
     List<Integer> empty(List<Integer> list, int whichCup) {
+        List<Integer> auxList=new ArrayList<>();
+        auxList.addAll(list);
         if (validateEmpty(list, whichCup)) {
             if (whichCup == 1) {
-                list.set(2, 0);
+                auxList.set(2, 0);
             } else {
-                list.set(3, 0);
+                auxList.set(3, 0);
             }
-            return list;
+            return auxList;
         }
         return list;
 
@@ -105,13 +112,13 @@ public class State {
 
     boolean backtracking(List<Integer> list) {
         if (isFinal(list)) {
-            System.out.println("final state:" + list);
+            System.out.println("The final state is:" + list);
             return true;
         }
+
         if (!existsInVisited(list)) {
-            System.out.println('a');
-            System.out.println(list);
-            isVisited[index++]=list;
+            isVisited.add(list);
+
             return (backtracking(fill(list, 1)) ||
                     backtracking(fill(list, 2)) ||
                     backtracking(empty(list, 1)) ||
@@ -123,13 +130,11 @@ public class State {
     }
 
     boolean existsInVisited(List<Integer> list) {
-        for(int index1=0; index1<index;index1++)
-        {
-            System.out.println(isVisited[index1]);
-        }
-        for (int index1=0; index1<index;index1++) {
 
-            if (isVisited[index1].equals(list)) return true;
+        for (List<Integer> list1 : isVisited){
+           if(list.equals(list1)){
+               return true;
+           }
         }
         return false;
 
