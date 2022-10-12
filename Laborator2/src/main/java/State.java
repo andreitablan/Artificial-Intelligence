@@ -1,13 +1,20 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Queue;
 
 public class State {
     List<Integer> list = new ArrayList<Integer>();
     List<List<Integer>> isVisited= new ArrayList<>();
-    int index=0;
+    List<List<Integer>> savedVisited= new ArrayList<>();
+    List<List<Integer>> solution=new ArrayList<>();
 
-    public State() {}
+
+
+    public State() {
+        solution.add(new ArrayList<>());
+
+    }
 
     void initialize(int m, int n, int currentM, int currentN, int k) {
         List<Integer> state1 = Arrays.asList(new Integer[]{m, n, currentM, currentN, k});
@@ -111,13 +118,20 @@ public class State {
     }
 
     boolean backtracking(List<Integer> list) {
+
         if (isFinal(list)) {
+            solution.add(list);
+            solution.remove(solution.get(0));
+            System.out.println("The solution is: " + solution);
             System.out.println("The final state is:" + list);
             return true;
         }
 
         if (!existsInVisited(list)) {
             isVisited.add(list);
+            if(!solution.get(solution.size() - 1).equals(list)){
+                solution.add(list);
+            }
 
             return (backtracking(fill(list, 1)) ||
                     backtracking(fill(list, 2)) ||
@@ -129,6 +143,7 @@ public class State {
         else return false;
     }
 
+
     boolean existsInVisited(List<Integer> list) {
 
         for (List<Integer> list1 : isVisited){
@@ -137,7 +152,32 @@ public class State {
            }
         }
         return false;
+    }
+    boolean existsInVisited1(List<Integer> list) {
+
+        for (List<Integer> list1 : savedVisited){
+            if(list.equals(list1)){
+                return true;
+            }
+        }
+        return false;
 
     }
-
+    boolean bfs(List<Integer> list) {
+        if ((list.get(2) == list.get(4) && list.get(3) == 0) || (list.get(3) == list.get(4) && list.get(2) == 0)) {
+            System.out.println("The final state is:" + list);
+            return true;
+        }
+        if (!existsInVisited1(list)) {
+            System.out.println(list);
+            savedVisited.add(list);
+            return (bfs(empty(list, 1)) ||
+                    bfs(empty(list, 2)) ||
+                    bfs(fill(list, 1)) ||
+                    bfs(fill(list, 2)) ||
+                    bfs(share(list, 1, 2)) ||
+                    bfs(share(list, 2, 1)));
+        }
+        return false;
+    }
 }
