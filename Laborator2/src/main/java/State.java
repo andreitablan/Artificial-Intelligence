@@ -4,12 +4,10 @@ import java.util.List;
 
 public class State {
     List<Integer> list = new ArrayList<Integer>();
-    List<List<Integer>> isVisited = new ArrayList<>();
-    int m, n, currentM, currentN, k;
+    List<Integer> isVisited[]=new List[20];
+    int index=0;
 
-    public State() {
-
-    }
+    public State() {}
 
     void initialize(int m, int n, int currentM, int currentN, int k) {
         List<Integer> state1 = Arrays.asList(new Integer[]{m, n, currentM, currentN, k});
@@ -17,7 +15,7 @@ public class State {
     }
 
     boolean isFinal(List<Integer> list) {
-        if (list.get(currentM) == list.get(k) || list.get(currentN) == list.get(k)) {
+        if (list.get(2) == list.get(4) || list.get(3) == list.get(4)) {
             return true;
         }
         return false;
@@ -27,41 +25,35 @@ public class State {
         if (validateShare(list, fromCup, toCup)) {
             if (fromCup == 1) {
                 int waterBuffer = 0;
-                if (list.get(currentM) < (list.get(n) - list.get(currentN))) {
-                    waterBuffer = list.get(currentM);
-                } else waterBuffer = list.get(n) - list.get(currentN);
-                list.set(currentM, list.get(currentM) - waterBuffer);
-                list.add(currentN, waterBuffer);
-            } else if (toCup == 1) {
+                if (list.get(2) < (list.get(1) - list.get(3))) {
+                    waterBuffer = list.get(2);
+                } else waterBuffer = list.get(1) - list.get(3);
+                list.set(2, list.get(2) - waterBuffer);
+                list.set(3, waterBuffer + list.get(3));
+            } else if (fromCup == 2) {
                 int waterBuffer = 0;
-                if (list.get(currentN) < (list.get(m) - list.get(currentM))) {
-                    waterBuffer = list.get(currentN);
-                } else waterBuffer = list.get(m) - list.get(currentN);
-                list.set(currentN, list.get(currentN) - waterBuffer);
-                list.add(currentM, waterBuffer);
-
+                if (list.get(3) < (list.get(0) - list.get(2))) {
+                    waterBuffer = list.get(3);
+                } else waterBuffer = list.get(0) - list.get(2);
+                list.set(3, list.get(3) - waterBuffer);
+                list.set(2, waterBuffer+list.get(2));
             }
+            return list;
         }
         return list;
     }
 
     boolean validateShare(List<Integer> list, int fromCup, int toCup) {
-        if (fromCup != 1 || fromCup != 2) {
-            return false;
-        }
-        if (toCup != 1 || toCup != 2) {
-            return false;
-        }
         if (toCup == fromCup) {
             return false;
         }
         if (fromCup == 0) {
             return false;
         }
-        if (fromCup == 1) {
-            if (toCup == list.get(m)) {
+        if (toCup == 1) {
+            if (toCup == list.get(0)) {
                 return false;
-            } else if (toCup == list.get(n)) {
+            } else if (toCup == list.get(1)) {
                 return false;
             }
         }
@@ -71,24 +63,20 @@ public class State {
     List<Integer> fill(List<Integer> list, int whichCup) {
         if (validateFill(list, whichCup)) {
             if (whichCup == 1) {
-                int waterBuffer = list.get(m) - list.get(currentM);
-                list.add(currentN, waterBuffer);
+                list.set(2,list.get(0));
             } else {
-                int waterBuffer = list.get(n) - list.get(currentN);
-                list.add(currentM, waterBuffer);
+                list.set(3,list.get(1));
             }
+            return list;
         }
         return list;
-
     }
 
     boolean validateFill(List<Integer> list, int whichCup) {
-        if (whichCup != 1 || whichCup != 2)
-            return false;
         if (whichCup == 1)
-            if (list.get(currentM) == list.get(m))
+            if (list.get(2) == list.get(0))
                 return false;
-            else if (list.get(currentN) == list.get(n))
+            else if (list.get(3) == list.get(1))
                 return false;
         return true;
     }
@@ -96,21 +84,21 @@ public class State {
     List<Integer> empty(List<Integer> list, int whichCup) {
         if (validateEmpty(list, whichCup)) {
             if (whichCup == 1) {
-                list.set(currentM, 0);
+                list.set(2, 0);
             } else {
-                list.set(currentN, 0);
+                list.set(3, 0);
             }
+            return list;
         }
         return list;
+
     }
 
     boolean validateEmpty(List<Integer> list, int whichCup) {
-        if (whichCup != 1 || whichCup != 2)
-            return false;
         if (whichCup == 1)
-            if (list.get(currentM) == 0)
+            if (list.get(2) == 0)
                 return false;
-            else if (list.get(currentN) == 0)
+            else if (list.get(3) == 0)
                 return false;
         return true;
     }
@@ -120,19 +108,31 @@ public class State {
             System.out.println("final state:" + list);
             return true;
         }
-        if (existsInVisited(list) == false) {
+        if (!existsInVisited(list)) {
+            System.out.println('a');
             System.out.println(list);
-            isVisited.add(list);
-            return (backtracking(fill(list, 1)) || backtracking(fill(list, 2)) || backtracking(empty(list, 1)) || backtracking(empty(list, 2))
-                    || backtracking(share(list, 1, 2)) || backtracking(share(list, 2, 1)));
+            isVisited[index++]=list;
+            return (backtracking(fill(list, 1)) ||
+                    backtracking(fill(list, 2)) ||
+                    backtracking(empty(list, 1)) ||
+                    backtracking(empty(list, 2)) ||
+                    backtracking(share(list, 1, 2)) ||
+                    backtracking(share(list, 2, 1)));
         }
-        return false;
+        else return false;
     }
 
     boolean existsInVisited(List<Integer> list) {
-        for (List<Integer> list1 : isVisited)
-            if (list1 == list) return true;
+        for(int index1=0; index1<index;index1++)
+        {
+            System.out.println(isVisited[index1]);
+        }
+        for (int index1=0; index1<index;index1++) {
+
+            if (isVisited[index1].equals(list)) return true;
+        }
         return false;
+
     }
 
 }
