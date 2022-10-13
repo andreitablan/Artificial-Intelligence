@@ -1,13 +1,11 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class State {
     List<Integer> list = new ArrayList<Integer>();
     List<List<Integer>> isVisited= new ArrayList<>();
     List<List<Integer>> savedVisited= new ArrayList<>();
     List<List<Integer>> solution=new ArrayList<>();
+    List<List<Integer>> visitedStates= new ArrayList<>();
 
 
 
@@ -153,31 +151,28 @@ public class State {
         }
         return false;
     }
-    boolean existsInVisited1(List<Integer> list) {
-
-        for (List<Integer> list1 : savedVisited){
-            if(list.equals(list1)){
-                return true;
+    private void bfs(List<Integer> list) {
+        boolean[][] visited=new boolean[list.get(0)+1][list.get(1)+1];
+        Queue<List<Integer>> queue= new LinkedList<>();
+        queue.offer(list);
+        while(!queue.isEmpty()){
+            List<Integer> auxList=new ArrayList<>();
+            auxList=list;
+            if (auxList.get(2) > auxList.get(0) || auxList.get(3) > auxList.get(1) || visited[auxList.get(3)][auxList.get(4)]) continue;
+            visited[auxList.get(3)][auxList.get(4)]=true;
+            if(auxList.get(2)==auxList.get(4)||auxList.get(3)==auxList.get(4))
+            {
+                if(auxList.get(2)==auxList.get(4)){
+                    visitedStates.add(empty(auxList,2));
+                }
+                else {
+                    visitedStates.add(empty(auxList,1));
+                }
             }
+            for (List<Integer> list1 : visitedStates){
+                System.out.println(list1);
+            }
+            return;
         }
-        return false;
-
-    }
-    boolean bfs(List<Integer> list) {
-        if ((list.get(2) == list.get(4) && list.get(3) == 0) || (list.get(3) == list.get(4) && list.get(2) == 0)) {
-            System.out.println("The final state is:" + list);
-            return true;
-        }
-        if (!existsInVisited1(list)) {
-            System.out.println(list);
-            savedVisited.add(list);
-            return (bfs(empty(list, 1)) ||
-                    bfs(empty(list, 2)) ||
-                    bfs(fill(list, 1)) ||
-                    bfs(fill(list, 2)) ||
-                    bfs(share(list, 1, 2)) ||
-                    bfs(share(list, 2, 1)));
-        }
-        return false;
     }
 }
