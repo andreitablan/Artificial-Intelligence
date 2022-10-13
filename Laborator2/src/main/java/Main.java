@@ -15,6 +15,7 @@ class Main {
         State state=new State();
         state.initialize(2, 5, 0, 0, 4);
         if(state.backtracking(state.list)){}
+        state.bfs(state.list);
 
     }
 

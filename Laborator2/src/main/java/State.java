@@ -2,11 +2,10 @@ import java.util.*;
 
 public class State {
     List<Integer> list = new ArrayList<Integer>();
-    List<List<Integer>> isVisited= new ArrayList<>();
-    List<List<Integer>> savedVisited= new ArrayList<>();
-    List<List<Integer>> solution=new ArrayList<>();
-    List<List<Integer>> visitedStates= new ArrayList<>();
-
+    List<List<Integer>> isVisited = new ArrayList<>();
+    List<List<Integer>> savedVisited = new ArrayList<>();
+    List<List<Integer>> solution = new ArrayList<>();
+    List<List<Integer>> visitedStates = new ArrayList<>();
 
 
     public State() {
@@ -27,7 +26,7 @@ public class State {
     }
 
     List<Integer> share(List<Integer> list, int fromCup, int toCup) {
-        List<Integer> auxList=new ArrayList<>();
+        List<Integer> auxList = new ArrayList<>();
         auxList.addAll(list);
         if (validateShare(auxList, fromCup, toCup)) {
             if (fromCup == 1) {
@@ -43,7 +42,7 @@ public class State {
                     waterBuffer = auxList.get(3);
                 } else waterBuffer = auxList.get(0) - auxList.get(2);
                 auxList.set(3, auxList.get(3) - waterBuffer);
-                auxList.set(2, waterBuffer+auxList.get(2));
+                auxList.set(2, waterBuffer + auxList.get(2));
             }
             return auxList;
         }
@@ -68,14 +67,14 @@ public class State {
     }
 
     List<Integer> fill(List<Integer> list, int whichCup) {
-        List<Integer> auxList=new ArrayList<>();
+        List<Integer> auxList = new ArrayList<>();
         auxList.addAll(list);
 
         if (validateFill(list, whichCup)) {
             if (whichCup == 1) {
-                auxList.set(2,list.get(0));
+                auxList.set(2, list.get(0));
             } else {
-                auxList.set(3,list.get(1));
+                auxList.set(3, list.get(1));
             }
             return auxList;
         }
@@ -92,7 +91,7 @@ public class State {
     }
 
     List<Integer> empty(List<Integer> list, int whichCup) {
-        List<Integer> auxList=new ArrayList<>();
+        List<Integer> auxList = new ArrayList<>();
         auxList.addAll(list);
         if (validateEmpty(list, whichCup)) {
             if (whichCup == 1) {
@@ -120,14 +119,14 @@ public class State {
         if (isFinal(list)) {
             solution.add(list);
             solution.remove(solution.get(0));
-            System.out.println("The solution is: " + solution);
-            System.out.println("The final state is:" + list);
+            System.out.println("The solution of Backtracking: " + solution);
+            System.out.println("The final state of Backtracking:" + list);
             return true;
         }
 
         if (!existsInVisited(list)) {
             isVisited.add(list);
-            if(!solution.get(solution.size() - 1).equals(list)){
+            if (!solution.get(solution.size() - 1).equals(list)) {
                 solution.add(list);
             }
 
@@ -137,42 +136,36 @@ public class State {
                     backtracking(empty(list, 2)) ||
                     backtracking(share(list, 1, 2)) ||
                     backtracking(share(list, 2, 1)));
-        }
-        else return false;
+        } else return false;
     }
 
 
     boolean existsInVisited(List<Integer> list) {
 
-        for (List<Integer> list1 : isVisited){
-           if(list.equals(list1)){
-               return true;
-           }
+        for (List<Integer> list1 : isVisited) {
+            if (list.equals(list1)) {
+                return true;
+            }
         }
         return false;
     }
-    private void bfs(List<Integer> list) {
-        boolean[][] visited=new boolean[list.get(0)+1][list.get(1)+1];
-        Queue<List<Integer>> queue= new LinkedList<>();
+
+    public void bfs(List<Integer> list) {
+        Queue<List<Integer>> queue = new LinkedList<>();
         queue.offer(list);
-        while(!queue.isEmpty()){
-            List<Integer> auxList=new ArrayList<>();
-            auxList=list;
-            if (auxList.get(2) > auxList.get(0) || auxList.get(3) > auxList.get(1) || visited[auxList.get(3)][auxList.get(4)]) continue;
-            visited[auxList.get(3)][auxList.get(4)]=true;
-            if(auxList.get(2)==auxList.get(4)||auxList.get(3)==auxList.get(4))
-            {
-                if(auxList.get(2)==auxList.get(4)){
-                    visitedStates.add(empty(auxList,2));
-                }
-                else {
-                    visitedStates.add(empty(auxList,1));
-                }
+        while (!queue.isEmpty()) {
+            List<Integer> auxList = queue.poll();
+            if (isFinal(auxList)) {
+                System.out.println("The final state of BFS:" + auxList);
+                break;
             }
-            for (List<Integer> list1 : visitedStates){
-                System.out.println(list1);
-            }
-            return;
+            queue.add(fill(auxList, 1));
+            queue.add(fill(auxList, 1));
+            queue.add(empty(auxList, 1));
+            queue.add(empty(auxList, 2));
+            queue.add(share(auxList, 1, 2));
+            queue.add(share(auxList, 2, 1));
+
         }
     }
 }
