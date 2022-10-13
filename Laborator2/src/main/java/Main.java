@@ -29,11 +29,15 @@ class Main {
         String strategy = scanner.next();
         State state=new State();
         state.initialize(m, n, 0, 0, k);
+        if(state.isSolvable(m,n,k)){
         if(strategy.equals("BKT")){
             if(state.backtracking(state.list)){}
         }
         else if(strategy.equals("BFS")){
             state.bfs(state.list);
+        }}
+        else {
+            System.out.println("The input is not solvable!");
         }
     }
 }

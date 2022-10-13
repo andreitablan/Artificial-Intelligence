@@ -13,6 +13,10 @@ public class State {
 
     }
 
+    boolean isSolvable(int m, int n, int k){
+        if(m%2==0 && n%2==0 && k%2==1)return false;
+        return true;
+    }
     void initialize(int m, int n, int currentM, int currentN, int k) {
         List<Integer> state1 = Arrays.asList(new Integer[]{m, n, currentM, currentN, k});
         list = state1;
