@@ -153,6 +153,11 @@ public class State {
     public void bfs(List<Integer> list) {
         Queue<List<Integer>> queue = new LinkedList<>();
         queue.offer(list);
+        if( (list.get(2) == list.get(4) && list.get(3) == 0)||(list.get(3) == list.get(4) && list.get(2) == 0))
+        {
+            System.out.println("The final state was already the input:" + list);
+            return;
+        }
         while (!queue.isEmpty()) {
             List<Integer> auxList = queue.poll();
             if (isFinal(auxList)) {
@@ -165,7 +170,6 @@ public class State {
             queue.add(empty(auxList, 2));
             queue.add(share(auxList, 1, 2));
             queue.add(share(auxList, 2, 1));
-
         }
     }
 }
