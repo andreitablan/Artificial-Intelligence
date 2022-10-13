@@ -14,7 +14,10 @@ public class State {
     }
 
     boolean isSolvable(int m, int n, int k){
-        if(m%2==0 && n%2==0 && k%2==1)return false;
+        if((m%2==0 && n%2==0 && k%2==1)
+                ||(k>m&&k>n)
+                ||(m<0||n<0||k<0))
+            return false;
         return true;
     }
     void initialize(int m, int n, int currentM, int currentN, int k) {
