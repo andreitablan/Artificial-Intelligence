@@ -1,12 +1,13 @@
 import java.util.*;
 
+import static java.lang.Math.abs;
+
 public class State {
     List<Integer> list = new ArrayList<Integer>();
     List<List<Integer>> isVisited = new ArrayList<>();
-    List<List<Integer>> savedVisited = new ArrayList<>();
     List<List<Integer>> solution = new ArrayList<>();
-    List<List<Integer>> visitedStates = new ArrayList<>();
     HashMap<List<Integer>, Integer> heuristics = new HashMap<>();
+    List<List<Integer>> hillclimbVisited = new ArrayList<>();
 
     public State() {
         solution.add(new ArrayList<>());
@@ -21,21 +22,16 @@ public class State {
         return true;
     }
 
-    void initialize(int m, int n, int currentM, int currentN, int k) {
-        List<Integer> state1 = Arrays.asList(new Integer[]{m, n, currentM, currentN, k});
-        list = state1;
+    void initialize(int m, int n, int k) {
+        list = Arrays.asList(m, n, 0, 0, k);
     }
 
     boolean isFinal(List<Integer> list) {
-        if (list.get(2) == list.get(4) || list.get(3) == list.get(4)) {
-            return true;
-        }
-        return false;
+        return Objects.equals(list.get(2), list.get(4)) || Objects.equals(list.get(3), list.get(4));
     }
 
     List<Integer> share(List<Integer> list, int fromCup, int toCup) {
-        List<Integer> auxList = new ArrayList<>();
-        auxList.addAll(list);
+        List<Integer> auxList = new ArrayList<>(list);
         if (validateShare(auxList, fromCup, toCup)) {
             if (fromCup == 1) {
                 int waterBuffer = 0;
@@ -67,16 +63,13 @@ public class State {
         if (toCup == 1) {
             if (toCup == list.get(0)) {
                 return false;
-            } else if (toCup == list.get(1)) {
-                return false;
-            }
+            } else return toCup != list.get(1);
         }
         return true;
     }
 
     List<Integer> fill(List<Integer> list, int whichCup) {
-        List<Integer> auxList = new ArrayList<>();
-        auxList.addAll(list);
+        List<Integer> auxList = new ArrayList<>(list);
 
         if (validateFill(list, whichCup)) {
             if (whichCup == 1) {
@@ -91,16 +84,15 @@ public class State {
 
     boolean validateFill(List<Integer> list, int whichCup) {
         if (whichCup == 1)
-            if (list.get(2) == list.get(0))
+            if (Objects.equals(list.get(2), list.get(0)))
                 return false;
-            else if (list.get(3) == list.get(1))
+            else if (Objects.equals(list.get(3), list.get(1)))
                 return false;
         return true;
     }
 
     List<Integer> empty(List<Integer> list, int whichCup) {
-        List<Integer> auxList = new ArrayList<>();
-        auxList.addAll(list);
+        List<Integer> auxList = new ArrayList<>(list);
         if (validateEmpty(list, whichCup)) {
             if (whichCup == 1) {
                 auxList.set(2, 0);
@@ -161,7 +153,7 @@ public class State {
     public void bfs(List<Integer> list) {
         Queue<List<Integer>> queue = new LinkedList<>();
         queue.offer(list);
-        if ((list.get(2) == list.get(4) && list.get(3) == 0) || (list.get(3) == list.get(4) && list.get(2) == 0)) {
+        if ((Objects.equals(list.get(2), list.get(4)) && list.get(3) == 0) || (Objects.equals(list.get(3), list.get(4)) && list.get(2) == 0)) {
             System.out.println("The final state was already the input:" + list);
             return;
         }
@@ -180,20 +172,21 @@ public class State {
         }
     }
 
+    //calculez cat de departe este continutul fiecarui pahar, de obiectivul k
+    //cu cat e mai mic rezultatul, cu atat e mai departe de obiectiv
     public int CalculateHeuristic(List<Integer> list) {
-        return 1 - Math.min((list.get(4) - list.get(2)) % list.get(4), (list.get(4) - list.get(3)) % list.get(4));
+        return Math.min(abs(list.get(4) - list.get(2)), abs(list.get(4) - list.get(3)));
     }
 
-    public void Hillclimbing(List<Integer> list, List<List<Integer>> history) {
+    public void Hillclimbing(List<Integer> list) {
         if (list.get(3).equals(list.get(4)) || list.get(2).equals(list.get(4))) {
-            System.out.println("Final state" + list);
+            System.out.println("The solution is: " + hillclimbVisited);
+            System.out.println("The final state is: " + list);
             return;
         }
-        history.add(list);
-        System.out.println(history);
+        hillclimbVisited.add(list);
 
         heuristics.clear();
-        System.out.println(list);
         heuristics.put(fill(list, 1), CalculateHeuristic(fill(list, 1)));
         heuristics.put(fill(list, 2), CalculateHeuristic(fill(list, 2)));
         heuristics.put(empty(list, 1), CalculateHeuristic(empty(list, 1)));
@@ -201,24 +194,30 @@ public class State {
         heuristics.put(share(list, 1, 2), CalculateHeuristic(share(list, 1, 2)));
         heuristics.put(share(list, 2, 1), CalculateHeuristic(share(list, 2, 1)));
 
+        int min = Math.max(list.get(0), list.get(1));
 
-        int max = -100;
         List<Integer> bestState = new ArrayList<>();
         for (List<Integer> key : heuristics.keySet()) {
             boolean stop = false;
-            if (heuristics.get(key) > max) {
-                for (List<Integer> auxList : history) {
+            if (heuristics.get(key) <= min) {
+                for (List<Integer> auxList : hillclimbVisited) {
                     if (auxList.equals(key)) {
                         stop = true;
                         break;
                     }
                 }
                 if (!stop) {
-                    max = heuristics.get(key);
+                    min = heuristics.get(key);
                     bestState = key;
                 }
             }
         }
-        Hillclimbing(bestState, history);
+
+        if (bestState.isEmpty()) {
+            System.out.println("There are no more options. Could only find a local maximum: " + list);
+            System.out.println(hillclimbVisited);
+            return;
+        }
+        Hillclimbing(bestState);
     }
 }

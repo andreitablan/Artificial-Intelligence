@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 class Main {
@@ -14,33 +11,31 @@ class Main {
     public static void main(String[] args) {
 
         //menu();
-        State state=new State();
-        state.initialize(3, 4, 0, 0, 2);
-        state.Hillclimbing(state.list,new ArrayList<>());
-
+        State state = new State();
+        state.initialize(3, 4, 2);
+        state.Hillclimbing(state.list);
     }
 
-    public static void menu(){
+    public static void menu() {
         System.out.println("Please give the initial state: ");
         Scanner scanner = new Scanner(System.in);
         System.out.println("capacity of the first cup = ");
-        Integer m = Integer.valueOf(scanner.next());
+        int m = Integer.parseInt(scanner.next());
         System.out.println("capacity of the second cup = ");
-        Integer n = Integer.valueOf(scanner.next());
+        int n = Integer.parseInt(scanner.next());
         System.out.println("final remaining quantity of water = ");
-        Integer k = Integer.valueOf(scanner.next());
-        System.out.println("Which strategy do you want to chose?[BKT/BFS]");
+        int k = Integer.parseInt(scanner.next());
+        System.out.println("Which strategy do you want to chose?[BKT/BFS/Hillclimbing]");
         String strategy = scanner.next();
-        State state=new State();
-        state.initialize(m, n, 0, 0, k);
-        if(state.isSolvable(m,n,k)){
-        if(strategy.equals("BKT")){
-            if(state.backtracking(state.list)){}
-        }
-        else if(strategy.equals("BFS")){
-            state.bfs(state.list);
-        }}
-        else {
+        State state = new State();
+        state.initialize(m, n, k);
+        if (state.isSolvable(m, n, k)) {
+            switch (strategy) {
+                case "BKT" -> state.backtracking(state.list);
+                case "BFS" -> state.bfs(state.list);
+                case "Hillclimbing" -> state.Hillclimbing(state.list);
+            }
+        } else {
             System.out.println("The input is not solvable!");
         }
     }
