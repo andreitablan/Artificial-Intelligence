@@ -13,9 +13,13 @@ class Main {
 
     public static void main(String[] args) {
 
-        menu();
+        //menu();
+        State state=new State();
+        state.initialize(3, 4, 0, 0, 2);
+        state.Hillclimbing(state.list,new ArrayList<>());
 
     }
+
     public static void menu(){
         System.out.println("Please give the initial state: ");
         Scanner scanner = new Scanner(System.in);

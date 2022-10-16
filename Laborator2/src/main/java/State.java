@@ -6,20 +6,21 @@ public class State {
     List<List<Integer>> savedVisited = new ArrayList<>();
     List<List<Integer>> solution = new ArrayList<>();
     List<List<Integer>> visitedStates = new ArrayList<>();
-
+    HashMap<List<Integer>, Integer> heuristics = new HashMap<>();
 
     public State() {
         solution.add(new ArrayList<>());
 
     }
 
-    boolean isSolvable(int m, int n, int k){
-        if((m%2==0 && n%2==0 && k%2==1)
-                ||(k>m&&k>n)
-                ||(m<0||n<0||k<0))
+    boolean isSolvable(int m, int n, int k) {
+        if ((m % 2 == 0 && n % 2 == 0 && k % 2 == 1)
+                || (k > m && k > n)
+                || (m < 0 || n < 0 || k < 0))
             return false;
         return true;
     }
+
     void initialize(int m, int n, int currentM, int currentN, int k) {
         List<Integer> state1 = Arrays.asList(new Integer[]{m, n, currentM, currentN, k});
         list = state1;
@@ -160,8 +161,7 @@ public class State {
     public void bfs(List<Integer> list) {
         Queue<List<Integer>> queue = new LinkedList<>();
         queue.offer(list);
-        if( (list.get(2) == list.get(4) && list.get(3) == 0)||(list.get(3) == list.get(4) && list.get(2) == 0))
-        {
+        if ((list.get(2) == list.get(4) && list.get(3) == 0) || (list.get(3) == list.get(4) && list.get(2) == 0)) {
             System.out.println("The final state was already the input:" + list);
             return;
         }
@@ -178,5 +178,47 @@ public class State {
             queue.add(share(auxList, 1, 2));
             queue.add(share(auxList, 2, 1));
         }
+    }
+
+    public int CalculateHeuristic(List<Integer> list) {
+        return 1 - Math.min((list.get(4) - list.get(2)) % list.get(4), (list.get(4) - list.get(3)) % list.get(4));
+    }
+
+    public void Hillclimbing(List<Integer> list, List<List<Integer>> history) {
+        if (list.get(3).equals(list.get(4)) || list.get(2).equals(list.get(4))) {
+            System.out.println("Final state" + list);
+            return;
+        }
+        history.add(list);
+        System.out.println(history);
+
+        heuristics.clear();
+        System.out.println(list);
+        heuristics.put(fill(list, 1), CalculateHeuristic(fill(list, 1)));
+        heuristics.put(fill(list, 2), CalculateHeuristic(fill(list, 2)));
+        heuristics.put(empty(list, 1), CalculateHeuristic(empty(list, 1)));
+        heuristics.put(empty(list, 2), CalculateHeuristic(empty(list, 2)));
+        heuristics.put(share(list, 1, 2), CalculateHeuristic(share(list, 1, 2)));
+        heuristics.put(share(list, 2, 1), CalculateHeuristic(share(list, 2, 1)));
+
+
+        int max = -100;
+        List<Integer> bestState = new ArrayList<>();
+        for (List<Integer> key : heuristics.keySet()) {
+            boolean stop = false;
+            if (heuristics.get(key) > max) {
+                for (List<Integer> auxList : history) {
+                    if (auxList.equals(key)) {
+                        stop = true;
+                        break;
+                    }
+                }
+                if (!stop) {
+                    max = heuristics.get(key);
+                    bestState = key;
+                }
+            }
+        }
+        Hillclimbing(bestState, history);
     }
 }
