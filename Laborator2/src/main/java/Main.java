@@ -10,10 +10,7 @@ class Main {
 
     public static void main(String[] args) {
 
-        //menu();
-        State state = new State();
-        state.initialize(3, 4, 2);
-        state.Hillclimbing(state.list);
+        menu();
     }
 
     public static void menu() {
