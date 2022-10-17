@@ -194,7 +194,9 @@ public class State {
         heuristics.put(share(list, 1, 2), CalculateHeuristic(share(list, 1, 2)));
         heuristics.put(share(list, 2, 1), CalculateHeuristic(share(list, 2, 1)));
 
-        int min = Math.max(list.get(0), list.get(1));
+
+        //int min = Math.max(list.get(0), list.get(1));
+        int min = CalculateHeuristic(list);
 
         List<Integer> bestState = new ArrayList<>();
         for (List<Integer> key : heuristics.keySet()) {
