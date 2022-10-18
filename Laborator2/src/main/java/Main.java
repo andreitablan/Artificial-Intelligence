@@ -10,7 +10,11 @@ class Main {
 
     public static void main(String[] args) {
 
-        menu();
+        //menu();
+        State state = new State();
+        state.initialize(3, 4, 2);
+        state.AStar(state.list);
+
     }
 
     public static void menu() {

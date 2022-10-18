@@ -9,8 +9,8 @@ public class State {
     HashMap<List<Integer>, Integer> heuristics = new HashMap<>();
     List<List<Integer>> hillclimbVisited = new ArrayList<>();
     List<List<Integer>> aStarVisited = new ArrayList<>();
-    HashMap<List<Integer>, Integer> heuristicsAStar = new HashMap<>();
-
+    List<List<Integer>> aStarQueue = new ArrayList<>();
+    List<List<Integer>> aStarList= new ArrayList<>();
 
     public State() {
         solution.add(new ArrayList<>());
@@ -181,8 +181,7 @@ public class State {
         }
     }
 
-    //calculez cat de departe este continutul fiecarui pahar, de obiectivul k
-    //cu cat e mai mic rezultatul, cu atat e mai departe de obiectiv
+
     public int CalculateHeuristic(List<Integer> list) {
         return Math.min(abs(list.get(4) - list.get(2)), abs(list.get(4) - list.get(3)));
     }
@@ -204,7 +203,6 @@ public class State {
         heuristics.put(share(list, 2, 1), CalculateHeuristic(share(list, 2, 1)));
 
 
-        //int min = Math.max(list.get(0), list.get(1));
         int min = CalculateHeuristic(list);
 
         List<Integer> bestState = new ArrayList<>();
@@ -231,6 +229,8 @@ public class State {
         }
         Hillclimbing(bestState);
     }
+
+    //a*      * (m,n,currentM,currentN,k)
     public int CalculateHeuristicAStar(List<Integer> list) {
         return Math.min(abs(list.get(2))+ abs(list.get(4) - list.get(2)), abs(list.get(3))+ abs(list.get(4) - list.get(3)));
     }
@@ -241,15 +241,39 @@ public class State {
             return;
         }
 
-        int bestScore=999;
+        int bestScore=Math.max(list.get(0),list.get(1));
+
         aStarVisited.add(list);
-        heuristicsAStar.clear();
-        heuristicsAStar.put(fill(list, 1), CalculateHeuristicAStar(fill(list, 1)));
-        heuristicsAStar.put(fill(list, 2), CalculateHeuristicAStar(fill(list, 2)));
-        heuristicsAStar.put(empty(list, 1), CalculateHeuristicAStar(empty(list, 1)));
-        heuristicsAStar.put(empty(list, 2), CalculateHeuristicAStar(empty(list, 2)));
-        heuristicsAStar.put(share(list, 1, 2), CalculateHeuristicAStar(share(list, 1, 2)));
-        heuristicsAStar.put(share(list, 2, 1), CalculateHeuristicAStar(share(list, 2, 1)));
+
+        aStarQueue.add(fill(list, 1));
+        aStarQueue.add( fill(list, 2));
+        aStarQueue.add(empty(list, 1));
+        aStarQueue.add(empty(list, 2));
+        aStarQueue.add( share(list, 1, 2));
+        aStarQueue.add(share(list, 2, 1));
+
+        aStarList.clear();
+        aStarList.add(fill(list, 1));
+        aStarList.add(fill(list, 2));
+        aStarList.add(empty(list, 1));
+        aStarList.add(empty(list, 2));
+        aStarList.add(share(list, 1, 2));
+        aStarList.add(share(list, 2, 1));
+
+        System.out.println(aStarList);
+
+        for(List<Integer> state1 : aStarList) {
+            for (List<Integer> state2 : aStarList) {
+                if (CalculateHeuristicAStar(state1) < CalculateHeuristicAStar(state2)) {
+                    List<Integer> auxState = new ArrayList<>();
+                    auxState=state2;
+                    state2=state1;
+                    state1=auxState;
+                }
+            }
+        }
+        System.out.println(aStarList);
+
 
         Queue<List<Integer>> queue = new LinkedList<>();
 
