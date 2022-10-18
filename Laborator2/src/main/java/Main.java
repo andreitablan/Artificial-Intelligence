@@ -31,6 +31,8 @@ class Main {
                 case "BKT" -> state.backtracking(state.list);
                 case "BFS" -> state.bfs(state.list);
                 case "Hillclimbing" -> state.Hillclimbing(state.list);
+                case "A*" -> state.AStar(state.list);
+
             }
         } else {
             System.out.println("The input is not solvable!");

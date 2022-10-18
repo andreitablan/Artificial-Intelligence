@@ -8,6 +8,9 @@ public class State {
     List<List<Integer>> solution = new ArrayList<>();
     HashMap<List<Integer>, Integer> heuristics = new HashMap<>();
     List<List<Integer>> hillclimbVisited = new ArrayList<>();
+    List<List<Integer>> aStarVisited = new ArrayList<>();
+    HashMap<List<Integer>, Integer> heuristicsAStar = new HashMap<>();
+
 
     public State() {
         solution.add(new ArrayList<>());
@@ -163,11 +166,17 @@ public class State {
                 System.out.println("The final state of BFS:" + auxList);
                 break;
             }
-            queue.add(fill(auxList, 1));
-            queue.add(fill(auxList, 1));
+            if(!isFinal(fill(auxList, 1))){
+            queue.add(fill(auxList, 1));}
+            if(!isFinal(fill(auxList, 2)))
+            queue.add(fill(auxList, 2));
+            if(!isFinal(empty(auxList, 1)))
             queue.add(empty(auxList, 1));
+            if(!isFinal(empty(auxList, 2)))
             queue.add(empty(auxList, 2));
+            if(!isFinal(share(auxList, 1, 2)))
             queue.add(share(auxList, 1, 2));
+            if(!isFinal(share(auxList, 2, 1)))
             queue.add(share(auxList, 2, 1));
         }
     }
@@ -221,5 +230,28 @@ public class State {
             return;
         }
         Hillclimbing(bestState);
+    }
+    public int CalculateHeuristicAStar(List<Integer> list) {
+        return Math.min(abs(list.get(2))+ abs(list.get(4) - list.get(2)), abs(list.get(3))+ abs(list.get(4) - list.get(3)));
+    }
+    public void AStar(List<Integer> list){
+        if (list.get(3).equals(list.get(4)) || list.get(2).equals(list.get(4))) {
+            System.out.println("The solution is: " + aStarVisited);
+            System.out.println("The final state is: " + list);
+            return;
+        }
+
+        int bestScore=999;
+        aStarVisited.add(list);
+        heuristicsAStar.clear();
+        heuristicsAStar.put(fill(list, 1), CalculateHeuristicAStar(fill(list, 1)));
+        heuristicsAStar.put(fill(list, 2), CalculateHeuristicAStar(fill(list, 2)));
+        heuristicsAStar.put(empty(list, 1), CalculateHeuristicAStar(empty(list, 1)));
+        heuristicsAStar.put(empty(list, 2), CalculateHeuristicAStar(empty(list, 2)));
+        heuristicsAStar.put(share(list, 1, 2), CalculateHeuristicAStar(share(list, 1, 2)));
+        heuristicsAStar.put(share(list, 2, 1), CalculateHeuristicAStar(share(list, 2, 1)));
+
+        Queue<List<Integer>> queue = new LinkedList<>();
+
     }
 }
