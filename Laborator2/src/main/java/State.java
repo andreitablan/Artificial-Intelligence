@@ -234,6 +234,13 @@ public class State {
     public int CalculateHeuristicAStar(List<Integer> list) {
         return Math.min(abs(list.get(2))+ abs(list.get(4) - list.get(2)), abs(list.get(3))+ abs(list.get(4) - list.get(3)));
     }
+    public static void swapList(List<Integer> list1, List<Integer> list2){
+        List<Integer> tmpList = new ArrayList<Integer>(list1);
+        list1.clear();
+        list1.addAll(list2);
+        list2.clear();
+        list2.addAll(tmpList);
+    }
     public void AStar(List<Integer> list){
         if (list.get(3).equals(list.get(4)) || list.get(2).equals(list.get(4))) {
             System.out.println("The solution is: " + aStarVisited);
@@ -264,12 +271,7 @@ public class State {
 
         for(List<Integer> state1 : aStarList) {
             for (List<Integer> state2 : aStarList) {
-                if (CalculateHeuristicAStar(state1) < CalculateHeuristicAStar(state2)) {
-                    List<Integer> auxState = new ArrayList<>();
-                    auxState=state2;
-                    state2=state1;
-                    state1=auxState;
-                }
+                System.out.println(CalculateHeuristicAStar(state1) + " < " + CalculateHeuristicAStar(state2));
             }
         }
         System.out.println(aStarList);

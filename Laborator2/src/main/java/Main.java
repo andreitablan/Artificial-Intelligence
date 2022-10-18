@@ -12,7 +12,7 @@ class Main {
 
         //menu();
         State state = new State();
-        state.initialize(3, 4, 2);
+        state.initialize(10, 5, 3);
         state.AStar(state.list);
 
     }
