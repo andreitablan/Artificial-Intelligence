@@ -250,6 +250,13 @@ public class State {
         return toSortList;
     }
 
+    boolean visited(List<List<Integer>> aStarList, List<Integer> list){
+        for(List<Integer> list1: aStarList){
+            if(list.equals(list1))return false;
+        }
+        return true;
+    }
+
     public void AStar(List<Integer> list){
         if (list.get(3).equals(list.get(4)) || list.get(2).equals(list.get(4))) {
             System.out.println("The solution is: " + aStarVisited);
@@ -278,35 +285,38 @@ public class State {
 
         aStarList=sortListByHeuristic(aStarList);
 
-        List<Integer> auxList=new ArrayList<>();
-        auxList=aStarList.get(0);
         int score=2;
-        while(!aStarList.isEmpty() && aStarScores.get(auxList)<bestScore){
+        while(!aStarList.isEmpty() ){
+            List<Integer> auxList=aStarList.get(0);
             if (isFinal(auxList)) {
                 System.out.println("The final state of BFS:" + auxList);
                 bestScore=CalculateHeuristicAStar(auxList);
                 break;
             }
             aStarVisited.add(auxList);
-            System.out.println("---------------------------------");
-            System.out.println(aStarVisited);
 
-            aStarList.add(fill(auxList, 1));
-            aStarList.add(fill(auxList, 2));
-            aStarList.add(empty(auxList, 1));
-            aStarList.add(empty(auxList, 2));
-            aStarList.add(share(auxList, 1, 2));
-            aStarList.add(share(auxList, 2, 1));
-
+            if(!visited(aStarList,fill(auxList, 1)))
+            {aStarList.add(fill(auxList, 1));}
+            if(!visited(aStarList,fill(auxList, 2)))
+                aStarList.add(fill(auxList, 2));
+            if(!visited(aStarList,empty(auxList, 1)))
+                aStarList.add(empty(auxList, 1));
+            if(!visited(aStarList,empty(auxList, 2)))
+                 aStarList.add(empty(auxList, 2));
+            if(!visited(aStarList,share(auxList, 1,2)))
+                  aStarList.add(share(auxList, 1, 2));
+            if(!visited(aStarList,share(auxList, 2,1)))
+                   aStarList.add(share(auxList, 2, 1));
             for(List<Integer> state:aStarList){
                 if(!aStarScores.containsKey(state)){
                     aStarScores.put(state,score);
                 }
             }
-            aStarList.remove(0);
+            aStarList.set(0,aStarList.get(aStarList.size()-1));
+            aStarList.remove(aStarList.get(aStarList.size()-1));
             aStarList=sortListByHeuristic(aStarList);
+            System.out.println(aStarList);
             score++;
-            auxList = aStarList.get(0);
         }
     }
 }
