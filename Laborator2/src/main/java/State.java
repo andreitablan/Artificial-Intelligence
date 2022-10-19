@@ -9,8 +9,9 @@ public class State {
     HashMap<List<Integer>, Integer> heuristics = new HashMap<>();
     List<List<Integer>> hillclimbVisited = new ArrayList<>();
     List<List<Integer>> aStarVisited = new ArrayList<>();
-    List<List<Integer>> aStarQueue = new ArrayList<>();
     List<List<Integer>> aStarList= new ArrayList<>();
+    HashMap<List<Integer>, Integer> aStarScores = new HashMap<>();
+
 
     public State() {
         solution.add(new ArrayList<>());
@@ -232,15 +233,23 @@ public class State {
 
     //a*      * (m,n,currentM,currentN,k)
     public int CalculateHeuristicAStar(List<Integer> list) {
-        return Math.min(abs(list.get(2))+ abs(list.get(4) - list.get(2)), abs(list.get(3))+ abs(list.get(4) - list.get(3)));
+        return Math.min(abs(list.get(0)-list.get(2))+ abs(list.get(4) - list.get(2)), abs(list.get(1)-list.get(3))+ abs(list.get(4) - list.get(3)));
     }
-    public static void swapList(List<Integer> list1, List<Integer> list2){
-        List<Integer> tmpList = new ArrayList<Integer>(list1);
-        list1.clear();
-        list1.addAll(list2);
-        list2.clear();
-        list2.addAll(tmpList);
+
+    List<List<Integer>> sortListByHeuristic(List<List<Integer>> toSortList){
+        for(int index1=0; index1<toSortList.size()-1;index1++) {
+            for (int index2=index1+1;index2<toSortList.size();index2++) {
+                if(CalculateHeuristicAStar(toSortList.get(index1))<CalculateHeuristicAStar(aStarList.get(index2))) {
+                    List<Integer> auxList = new ArrayList<>();
+                    auxList=toSortList.get(index1);
+                    toSortList.set(index1,toSortList.get(index2));
+                    toSortList.set(index2,auxList);
+                }
+            }
+        }
+        return toSortList;
     }
+
     public void AStar(List<Integer> list){
         if (list.get(3).equals(list.get(4)) || list.get(2).equals(list.get(4))) {
             System.out.println("The solution is: " + aStarVisited);
@@ -252,13 +261,6 @@ public class State {
 
         aStarVisited.add(list);
 
-        aStarQueue.add(fill(list, 1));
-        aStarQueue.add( fill(list, 2));
-        aStarQueue.add(empty(list, 1));
-        aStarQueue.add(empty(list, 2));
-        aStarQueue.add( share(list, 1, 2));
-        aStarQueue.add(share(list, 2, 1));
-
         aStarList.clear();
         aStarList.add(fill(list, 1));
         aStarList.add(fill(list, 2));
@@ -267,17 +269,44 @@ public class State {
         aStarList.add(share(list, 1, 2));
         aStarList.add(share(list, 2, 1));
 
-        System.out.println(aStarList);
-
-        for(List<Integer> state1 : aStarList) {
-            for (List<Integer> state2 : aStarList) {
-                System.out.println(CalculateHeuristicAStar(state1) + " < " + CalculateHeuristicAStar(state2));
+        for(List<Integer> state:aStarList){
+            if(!aStarScores.containsKey(state)){
+                aStarScores.put(state,1);
             }
+            else aStarScores.put(state,aStarScores.get(state)+1);
         }
-        System.out.println(aStarList);
 
+        aStarList=sortListByHeuristic(aStarList);
 
-        Queue<List<Integer>> queue = new LinkedList<>();
+        List<Integer> auxList=new ArrayList<>();
+        auxList=aStarList.get(0);
+        int score=2;
+        while(!aStarList.isEmpty() && aStarScores.get(auxList)<bestScore){
+            if (isFinal(auxList)) {
+                System.out.println("The final state of BFS:" + auxList);
+                bestScore=CalculateHeuristicAStar(auxList);
+                break;
+            }
+            aStarVisited.add(auxList);
+            System.out.println("---------------------------------");
+            System.out.println(aStarVisited);
 
+            aStarList.add(fill(auxList, 1));
+            aStarList.add(fill(auxList, 2));
+            aStarList.add(empty(auxList, 1));
+            aStarList.add(empty(auxList, 2));
+            aStarList.add(share(auxList, 1, 2));
+            aStarList.add(share(auxList, 2, 1));
+
+            for(List<Integer> state:aStarList){
+                if(!aStarScores.containsKey(state)){
+                    aStarScores.put(state,score);
+                }
+            }
+            aStarList.remove(0);
+            aStarList=sortListByHeuristic(aStarList);
+            score++;
+            auxList = aStarList.get(0);
+        }
     }
 }
