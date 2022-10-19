@@ -8,8 +8,9 @@ public class State {
     List<List<Integer>> solution = new ArrayList<>();
     HashMap<List<Integer>, Integer> heuristics = new HashMap<>();
     List<List<Integer>> hillclimbVisited = new ArrayList<>();
+    List<List<Integer>> aStarDiscovered = new ArrayList<>();
     List<List<Integer>> aStarVisited = new ArrayList<>();
-    List<List<Integer>> aStarList= new ArrayList<>();
+    List<List<Integer>> aStarList = new ArrayList<>();
     HashMap<List<Integer>, Integer> aStarScores = new HashMap<>();
 
 
@@ -167,18 +168,19 @@ public class State {
                 System.out.println("The final state of BFS:" + auxList);
                 break;
             }
-            if(!isFinal(fill(auxList, 1))){
-            queue.add(fill(auxList, 1));}
-            if(!isFinal(fill(auxList, 2)))
-            queue.add(fill(auxList, 2));
-            if(!isFinal(empty(auxList, 1)))
-            queue.add(empty(auxList, 1));
-            if(!isFinal(empty(auxList, 2)))
-            queue.add(empty(auxList, 2));
-            if(!isFinal(share(auxList, 1, 2)))
-            queue.add(share(auxList, 1, 2));
-            if(!isFinal(share(auxList, 2, 1)))
-            queue.add(share(auxList, 2, 1));
+            if (!isFinal(fill(auxList, 1))) {
+                queue.add(fill(auxList, 1));
+            }
+            if (!isFinal(fill(auxList, 2)))
+                queue.add(fill(auxList, 2));
+            if (!isFinal(empty(auxList, 1)))
+                queue.add(empty(auxList, 1));
+            if (!isFinal(empty(auxList, 2)))
+                queue.add(empty(auxList, 2));
+            if (!isFinal(share(auxList, 1, 2)))
+                queue.add(share(auxList, 1, 2));
+            if (!isFinal(share(auxList, 2, 1)))
+                queue.add(share(auxList, 2, 1));
         }
     }
 
@@ -231,92 +233,117 @@ public class State {
         Hillclimbing(bestState);
     }
 
-    //a*      * (m,n,currentM,currentN,k)
+
     public int CalculateHeuristicAStar(List<Integer> list) {
-        return Math.min(abs(list.get(0)-list.get(2))+ abs(list.get(4) - list.get(2)), abs(list.get(1)-list.get(3))+ abs(list.get(4) - list.get(3)));
+        return Math.min(abs(list.get(0) - list.get(2)) + abs(list.get(4) - list.get(2)), abs(list.get(1) - list.get(3)) + abs(list.get(4) - list.get(3)));
     }
 
-    List<List<Integer>> sortListByHeuristic(List<List<Integer>> toSortList){
-        for(int index1=0; index1<toSortList.size()-1;index1++) {
-            for (int index2=index1+1;index2<toSortList.size();index2++) {
-                if(CalculateHeuristicAStar(toSortList.get(index1))<CalculateHeuristicAStar(aStarList.get(index2))) {
+    List<List<Integer>> sortListByHeuristic(List<List<Integer>> toSortList) {
+        for (int index1 = 0; index1 < toSortList.size() - 1; index1++) {
+            for (int index2 = index1 + 1; index2 < toSortList.size(); index2++) {
+                if (CalculateHeuristicAStar(toSortList.get(index1)) < CalculateHeuristicAStar(aStarList.get(index2))) {
                     List<Integer> auxList = new ArrayList<>();
-                    auxList=toSortList.get(index1);
-                    toSortList.set(index1,toSortList.get(index2));
-                    toSortList.set(index2,auxList);
+                    auxList = toSortList.get(index1);
+                    toSortList.set(index1, toSortList.get(index2));
+                    toSortList.set(index2, auxList);
                 }
             }
         }
         return toSortList;
     }
 
-    boolean visited(List<List<Integer>> aStarList, List<Integer> list){
-        for(List<Integer> list1: aStarList){
-            if(list.equals(list1))return false;
-        }
-        return true;
-    }
-
-    public void AStar(List<Integer> list){
+    public void AStar(List<Integer> list) {
         if (list.get(3).equals(list.get(4)) || list.get(2).equals(list.get(4))) {
-            System.out.println("The solution is: " + aStarVisited);
+            System.out.println("The solution is: " + aStarDiscovered);
             System.out.println("The final state is: " + list);
             return;
         }
 
-        int bestScore=Math.max(list.get(0),list.get(1));
-
+        int bestScore = 999;
+        aStarDiscovered.add(list);
         aStarVisited.add(list);
 
-        aStarList.clear();
-        aStarList.add(fill(list, 1));
-        aStarList.add(fill(list, 2));
-        aStarList.add(empty(list, 1));
-        aStarList.add(empty(list, 2));
-        aStarList.add(share(list, 1, 2));
-        aStarList.add(share(list, 2, 1));
-
-        for(List<Integer> state:aStarList){
-            if(!aStarScores.containsKey(state)){
-                aStarScores.put(state,1);
-            }
-            else aStarScores.put(state,aStarScores.get(state)+1);
+        if (!aStarDiscovered.contains(fill(list, 1))) {
+            aStarList.add(fill(list, 1));
+            aStarDiscovered.add(fill(list, 1));
+        }
+        if (!aStarDiscovered.contains(fill(list, 2))) {
+            aStarList.add(fill(list, 2));
+            aStarDiscovered.add(fill(list, 2));
+        }
+        if (!aStarDiscovered.contains(empty(list, 1))) {
+            aStarList.add(empty(list, 1));
+            aStarDiscovered.add(empty(list, 1));
+        }
+        if (!aStarDiscovered.contains(empty(list, 2))) {
+            aStarList.add(empty(list, 2));
+            aStarDiscovered.add(empty(list, 2));
+        }
+        if (!aStarDiscovered.contains(share(list, 1, 2))) {
+            aStarList.add(share(list, 1, 2));
+            aStarDiscovered.add(share(list, 1, 2));
+        }
+        if (!aStarDiscovered.contains(share(list, 2, 1))) {
+            aStarList.add(share(list, 2, 1));
+            aStarDiscovered.add(share(list, 2, 1));
         }
 
-        aStarList=sortListByHeuristic(aStarList);
+        for (List<Integer> state : aStarList) {
+            if (!aStarScores.containsKey(state)) {
+                aStarScores.put(state, 1);
+            } else aStarScores.put(state, aStarScores.get(state) + 1);
+        }
 
-        int score=2;
-        while(!aStarList.isEmpty() ){
-            List<Integer> auxList=aStarList.get(0);
-            if (isFinal(auxList)) {
-                System.out.println("The final state of BFS:" + auxList);
-                bestScore=CalculateHeuristicAStar(auxList);
+        aStarList = sortListByHeuristic(aStarList);
+
+        List<Integer> currentState = new ArrayList<>();
+        currentState = aStarList.get(0);
+        int score = 2;
+        while (!aStarList.isEmpty() && aStarScores.get(currentState) < bestScore) {
+
+            if (isFinal(currentState)) {
+                System.out.println("The solution of A* is:" + aStarVisited);
+                System.out.println("The final state of A*:" + currentState);
                 break;
             }
-            aStarVisited.add(auxList);
+            aStarDiscovered.add(currentState);
+            aStarVisited.add(currentState);
 
-            if(!visited(aStarList,fill(auxList, 1)))
-            {aStarList.add(fill(auxList, 1));}
-            if(!visited(aStarList,fill(auxList, 2)))
-                aStarList.add(fill(auxList, 2));
-            if(!visited(aStarList,empty(auxList, 1)))
-                aStarList.add(empty(auxList, 1));
-            if(!visited(aStarList,empty(auxList, 2)))
-                 aStarList.add(empty(auxList, 2));
-            if(!visited(aStarList,share(auxList, 1,2)))
-                  aStarList.add(share(auxList, 1, 2));
-            if(!visited(aStarList,share(auxList, 2,1)))
-                   aStarList.add(share(auxList, 2, 1));
-            for(List<Integer> state:aStarList){
-                if(!aStarScores.containsKey(state)){
-                    aStarScores.put(state,score);
+            if (!aStarDiscovered.contains(fill(currentState, 1))) {
+                aStarList.add(fill(currentState, 1));
+                aStarDiscovered.add(fill(currentState, 1));
+            }
+            if (!aStarDiscovered.contains(fill(currentState, 2))) {
+                aStarList.add(fill(currentState, 2));
+                aStarDiscovered.add(fill(currentState, 2));
+            }
+            if (!aStarDiscovered.contains(empty(currentState, 1))) {
+                aStarList.add(empty(currentState, 1));
+                aStarDiscovered.add(empty(currentState, 1));
+            }
+            if (!aStarDiscovered.contains(empty(currentState, 2))) {
+                aStarList.add(empty(currentState, 2));
+                aStarDiscovered.add(empty(currentState, 2));
+            }
+            if (!aStarDiscovered.contains(share(currentState, 1, 2))) {
+                aStarList.add(share(currentState, 1, 2));
+                aStarDiscovered.add(share(currentState, 1, 2));
+            }
+            if (!aStarDiscovered.contains(share(currentState, 2, 1))) {
+                aStarList.add(share(currentState, 2, 1));
+                aStarDiscovered.add(share(currentState, 2, 1));
+            }
+
+            for (List<Integer> state : aStarList) {
+                if (!aStarScores.containsKey(state)) {
+                    aStarScores.put(state, score);
                 }
             }
-            aStarList.set(0,aStarList.get(aStarList.size()-1));
-            aStarList.remove(aStarList.get(aStarList.size()-1));
-            aStarList=sortListByHeuristic(aStarList);
-            System.out.println(aStarList);
+            aStarList.remove(0);
+            aStarList = sortListByHeuristic(aStarList);
+
             score++;
+            currentState = aStarList.get(0);
         }
     }
 }

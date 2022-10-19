@@ -10,10 +10,7 @@ class Main {
 
     public static void main(String[] args) {
 
-        //menu();
-        State state = new State();
-        state.initialize(10, 5, 3);
-        state.AStar(state.list);
+        menu();
 
     }
 
@@ -26,7 +23,7 @@ class Main {
         int n = Integer.parseInt(scanner.next());
         System.out.println("final remaining quantity of water = ");
         int k = Integer.parseInt(scanner.next());
-        System.out.println("Which strategy do you want to chose?[BKT/BFS/Hillclimbing]");
+        System.out.println("Which strategy do you want to chose?[BKT/BFS/Hillclimbing/A*]");
         String strategy = scanner.next();
         State state = new State();
         state.initialize(m, n, k);
