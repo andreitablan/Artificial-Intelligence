@@ -242,6 +242,9 @@ public class State {
     public int CalculateHeuristicAStar(List<Integer> list) {
         return Math.min(abs(list.get(0) - list.get(2)) + abs(list.get(4) - list.get(2)), abs(list.get(1) - list.get(3)) + abs(list.get(4) - list.get(3)));
     }
+    public int CalculateScoreAStar(int distance, int heuristic){
+        return distance+heuristic;
+    }
 
     List<List<Integer>> sortListByHeuristic(List<List<Integer>> toSortList) {
         for (int index1 = 0; index1 < toSortList.size() - 1; index1++) {
@@ -295,15 +298,15 @@ public class State {
 
         for (List<Integer> state : aStarList) {
             if (!aStarScores.containsKey(state)) {
-                aStarScores.put(state, 1);
-            } else aStarScores.put(state, aStarScores.get(state) + 1);
+                aStarScores.put(state,CalculateScoreAStar(1,CalculateHeuristicAStar(state)));
+            }
         }
 
         aStarList = sortListByHeuristic(aStarList);
 
         List<Integer> currentState = new ArrayList<>();
         currentState = aStarList.get(0);
-        int score = 2;
+        int distance = 2;
         while (!aStarList.isEmpty() && aStarScores.get(currentState) < bestScore) {
 
             if (isFinal(currentState)) {
@@ -341,13 +344,13 @@ public class State {
 
             for (List<Integer> state : aStarList) {
                 if (!aStarScores.containsKey(state)) {
-                    aStarScores.put(state, score);
+                    aStarScores.put(state, CalculateScoreAStar(distance,CalculateHeuristicAStar(state)));
                 }
             }
             aStarList.remove(0);
             aStarList = sortListByHeuristic(aStarList);
 
-            score++;
+            distance++;
             currentState = aStarList.get(0);
         }
     }
