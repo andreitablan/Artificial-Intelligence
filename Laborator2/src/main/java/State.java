@@ -18,11 +18,16 @@ public class State {
         solution.add(new ArrayList<>());
 
     }
-
+    int greatestCommonDivisor(int number1,int number2){
+        if (number2 == 0) {
+            return number1;
+        }
+        return greatestCommonDivisor(number2, number1 % number2);
+    }
     boolean isSolvable(int m, int n, int k) {
-        if ((m % 2 == 0 && n % 2 == 0 && k % 2 == 1)
-                || (k > m && k > n)
-                || (m < 0 || n < 0 || k < 0))
+        if (k>m&&k>n)
+            return false;
+        if((k%greatestCommonDivisor(m,n))!=0)
             return false;
         return true;
     }
