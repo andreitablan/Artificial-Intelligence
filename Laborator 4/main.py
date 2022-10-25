@@ -5,6 +5,17 @@ def block(matrix, block_i, block_j):
     matrix[block_i][block_j] = -1
 
 
+def priority(states, size):
+    prior = {}
+    for queen in range(0, size):
+        number_of_0 = 0
+        for index in range(0, size):
+            if states[queen][index] == 0:
+                number_of_0 += 1
+        prior[queen] = number_of_0
+    return sorted(prior.values())
+
+
 def place_queen(aux_states, size, x, y):
     states2 = aux_states.copy()
     if states2[x][y] != -1:
@@ -47,6 +58,7 @@ def is_domain_empty(states, size, queen):
             return False
     return True
 
+
 def is_domain_final(states, size, queen):
     for j in range(0, size):
         if states[queen][j] == 1:
@@ -67,8 +79,8 @@ def select_value_forward_checking(size, aux_states, states, queen):
         print("----------------")
         print_states(aux_states, size)
 
-        k=queen+1
-        while k<size:
+        k = queen + 1
+        while k < size:
             for j in range(0, size):
                 if aux_states[queen][j] == 0:
                     position = j
@@ -89,7 +101,7 @@ def select_value_forward_checking(size, aux_states, states, queen):
                 print("am resetat:")
                 print_states(aux_states, size)
             else:
-                k+=1
+                k += 1
         ok = True
     for queen in range(0, size):
         if not is_domain_final(aux_states, size, queen):
@@ -104,7 +116,7 @@ def select_value_forward_checking(size, aux_states, states, queen):
 def generalized_lookahead(size, states):
     index = 0
     while size > index >= 0:
-        aux_states=copy.deepcopy(states)
+        aux_states = copy.deepcopy(states)
         j = select_value_forward_checking(size, aux_states, states, index)
         if j is None:
             index -= 1
@@ -117,6 +129,10 @@ def generalized_lookahead(size, states):
             print("noul meu states: ")
             print_states(states, size)
 
+    for i in range(0, size):
+        for j in range(0, size):
+            if aux_states[i][j] < 0:
+                aux_states[i][j] = -1
     if index == 0:
         return False, aux_states
     else:
