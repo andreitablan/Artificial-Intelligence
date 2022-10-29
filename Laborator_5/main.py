@@ -18,7 +18,7 @@ def read_input():
     values = []
     for line in range(0, len(data)):
         if line < 2:
-            line_split = data[line].split("\t");
+            line_split = data[line].split("\t")
             moves = []
             for move in range(1, len(line_split)):
                 moves.append(line_split[move])
@@ -29,17 +29,46 @@ def read_input():
                 values.append(line_split[output_value])
 
     list_of_moves = []
-    index = 0;
+    index = 0
     for move1 in players['PlayerA']:
         for move2 in players['PlayerB']:
             split_output = values[index].split("/")
-            move = Move("PlayerA", "PlayerB", move1, move2, (split_output[0], split_output[1]))
+            move = Move("PlayerA", "PlayerB", move1, move2, (int(split_output[0]), int(split_output[1])))
             list_of_moves.append(move)
             index += 1
 
     for listed_move in list_of_moves:
         listed_move.print()
+    return list_of_moves
 
+def calculate_dominant_strategy(list_of_moves):
+    player1_scores={}
+    player2_scores={}
+    for move in list_of_moves:
+        if move.move_player1 not in player1_scores:
+            player1_scores[move.move_player1]=move.output[0]
+        else:
+            player1_scores[move.move_player1]+=move.output[0]
+
+        if move.move_player2 not in player2_scores:
+            player2_scores[move.move_player2]=move.output[1]
+        else:
+            player2_scores[move.move_player2]+=move.output[1]
+
+    max1=-1
+    for key in player1_scores:
+        if player1_scores[key]>max1:
+            max1=player1_scores[key]
+            dominaint_move_1=key
+
+    max2=-1
+    for key in player2_scores:
+        if player2_scores[key]>max2:
+            max2=player2_scores[key]
+            dominaint_move_2=key
+
+    return (dominaint_move_1,dominaint_move_2)
 
 if __name__ == '__main__':
-    read_input()
+    list_of_moves=read_input()
+    print(calculate_dominant_strategy(list_of_moves))
