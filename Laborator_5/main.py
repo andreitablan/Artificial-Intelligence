@@ -41,34 +41,64 @@ def read_input():
         listed_move.print()
     return list_of_moves
 
+
 def calculate_dominant_strategy(list_of_moves):
-    player1_scores={}
-    player2_scores={}
+    player1_scores = {}
+    player2_scores = {}
     for move in list_of_moves:
         if move.move_player1 not in player1_scores:
-            player1_scores[move.move_player1]=move.output[0]
+            player1_scores[move.move_player1] = move.output[0]
         else:
-            player1_scores[move.move_player1]+=move.output[0]
+            player1_scores[move.move_player1] += move.output[0]
 
         if move.move_player2 not in player2_scores:
-            player2_scores[move.move_player2]=move.output[1]
+            player2_scores[move.move_player2] = move.output[1]
         else:
-            player2_scores[move.move_player2]+=move.output[1]
+            player2_scores[move.move_player2] += move.output[1]
 
-    max1=-1
+    max1 = -1
     for key in player1_scores:
-        if player1_scores[key]>max1:
-            max1=player1_scores[key]
-            dominaint_move_1=key
+        if player1_scores[key] > max1:
+            max1 = player1_scores[key]
+            dominaint_move_1 = key
 
-    max2=-1
+    max2 = -1
     for key in player2_scores:
-        if player2_scores[key]>max2:
-            max2=player2_scores[key]
-            dominaint_move_2=key
+        if player2_scores[key] > max2:
+            max2 = player2_scores[key]
+            dominaint_move_2 = key
 
-    return (dominaint_move_1,dominaint_move_2)
+    return (dominaint_move_1, dominaint_move_2)
+
+
+def calculate_Nash_equilibrum(list_of_moves):
+    for move in list_of_moves:
+        print("Another move:", move.output)
+        maxim_player_1 = -1
+        maxim_player_2 = -1
+        for move1 in list_of_moves:
+            if move != move1:
+                if move.move_player1 == move1.move_player1:
+                    print("---Compare:", move.move_player1, "-", move.move_player2, ":", move.output[1], ' ',
+                          move1.move_player1, "-",
+                          move1.move_player2, ":", move1.output[1])
+                    maxim_player_2 = max(move1.output[1], move.output[1])
+
+                if move.move_player2 == move1.move_player2:
+                    print("---Compare:", move.move_player1, "-", move.move_player2, ":", move.output[0], ' ',
+                          move1.move_player1, "-",
+                          move1.move_player2, ":", move1.output[0])
+                    maxim_player_1 = max(move1.output[0], move.output[0])
+        print("The maximum for the pure strategy is: ", maxim_player_2, maxim_player_2)
+        if move.output[0] == maxim_player_1 and move.output[1] == maxim_player_2:
+            nash = move.output
+    return nash
+
 
 if __name__ == '__main__':
-    list_of_moves=read_input()
+    print("The input is:")
+    list_of_moves = read_input()
+    print("A dominant strategy is:")
     print(calculate_dominant_strategy(list_of_moves))
+    print("A Nash equilibrium for pure strategies is:")
+    print("Nash:", calculate_Nash_equilibrum(list_of_moves))
