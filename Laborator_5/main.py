@@ -72,6 +72,7 @@ def calculate_dominant_strategy(list_of_moves):
 
 
 def calculate_Nash_equilibrum(list_of_moves):
+    nash=0
     for move in list_of_moves:
         print("Another move:", move.output)
         maxim_player_1 = -1
@@ -82,13 +83,18 @@ def calculate_Nash_equilibrum(list_of_moves):
                     print("---Compare:", move.move_player1, "-", move.move_player2, ":", move.output[1], ' ',
                           move1.move_player1, "-",
                           move1.move_player2, ":", move1.output[1])
-                    maxim_player_2 = max(move1.output[1], move.output[1])
-
+                    if move1.output[1] > maxim_player_2:
+                        maxim_player_2 = move1.output[1]
+                    if move.output[1] > maxim_player_2:
+                        maxim_player_2 = move.output[1]
                 if move.move_player2 == move1.move_player2:
                     print("---Compare:", move.move_player1, "-", move.move_player2, ":", move.output[0], ' ',
                           move1.move_player1, "-",
                           move1.move_player2, ":", move1.output[0])
-                    maxim_player_1 = max(move1.output[0], move.output[0])
+                    if move1.output[0] > maxim_player_1:
+                        maxim_player_1 = move1.output[0]
+                    if move.output[0] > maxim_player_1:
+                        maxim_player_1 = move.output[0]
         print("The maximum for the pure strategy is: ", maxim_player_2, maxim_player_2)
         if move.output[0] == maxim_player_1 and move.output[1] == maxim_player_2:
             nash = move.output
