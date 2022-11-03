@@ -38,7 +38,7 @@ if __name__ == '__main__':
     random.shuffle(data)
     for flower in range(0, int((10 / 100) * len(data))):
         test_data.append(data.pop(flower))
-        
+
     for row in range(0, size):
         for column in range(0, size):
             if row < column:
