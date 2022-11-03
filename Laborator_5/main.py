@@ -98,7 +98,10 @@ def calculate_Nash_equilibrum(list_of_moves):
         print("The maximum for the pure strategy is: ", maxim_player_2, maxim_player_2)
         if move.output[0] == maxim_player_1 and move.output[1] == maxim_player_2:
             nash = move.output
-    return nash
+    if nash==0:
+        return "Nu exista!"
+    else:
+        return nash
 
 
 if __name__ == '__main__':
