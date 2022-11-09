@@ -90,12 +90,11 @@ def populate_neural_network(size):
 
 
 def forward_propagation(X, weights_input_hidden, weights_hidden_output):
-    # Propagate inputs though network
-    z2 = np.dot(X, weights_input_hidden)
-    a2 = sigmoid(z2)
-    z3 = np.dot(a2, weights_hidden_output)
-    yHat = sigmoid(z3)
-    return yHat
+    hidden = np.dot(X, weights_input_hidden)
+    activated_hidden = sigmoid(hidden)
+    output = np.dot(activated_hidden, weights_hidden_output)
+    activated_output = sigmoid(output)
+    return activated_output
 
 
 def initialize_parameters():
@@ -110,18 +109,20 @@ def initialize_parameters():
     data_input = []
     data_output = []
     for iris in data:
-        list = []
-        list.append(iris.sepal_length)
-        list.append(iris.sepal_width)
-        list.append(iris.petal_length)
-        list.append(iris.petal_width)
-        data_input.append(list)
+        aux_list = []
+        aux_list.append(iris.sepal_length)
+        aux_list.append(iris.sepal_width)
+        aux_list.append(iris.petal_length)
+        aux_list.append(iris.petal_width)
+        data_input.append(aux_list)
         data_output.append(iris.iris_class)
+
     X = np.array(data_input, dtype=float)
     Y = np.array(data_output, dtype=type(data[1].iris_class))
     weights_input_hidden = np.random.randn(input_layer_size, hidden_layer_size)
     weights_hidden_output = np.random.randn(hidden_layer_size, output_layer_size)
-    print(forward_propagation(X,weights_input_hidden,weights_hidden_output))
+    print(forward_propagation(X, weights_input_hidden, weights_hidden_output))
+
     neural_network = populate_neural_network(size)
     # for row in range(0, size):
     #   print(neural_network[row])
