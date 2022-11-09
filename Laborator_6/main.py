@@ -1,3 +1,4 @@
+import string
 from csv import reader
 import random
 import numpy as np
@@ -88,6 +89,15 @@ def populate_neural_network(size):
     return neural_network
 
 
+def forward_propagation(X, weights_input_hidden, weights_hidden_output):
+    # Propagate inputs though network
+    z2 = np.dot(X, weights_input_hidden)
+    a2 = sigmoid(z2)
+    z3 = np.dot(a2, weights_hidden_output)
+    yHat = sigmoid(z3)
+    return yHat
+
+
 def initialize_parameters():
     size = 11
     input_layer_size = 4
@@ -97,6 +107,21 @@ def initialize_parameters():
     number_of_ages = 30
     data = read_from_csv()
     test_data = create_test_data(data)
+    data_input = []
+    data_output = []
+    for iris in data:
+        list = []
+        list.append(iris.sepal_length)
+        list.append(iris.sepal_width)
+        list.append(iris.petal_length)
+        list.append(iris.petal_width)
+        data_input.append(list)
+        data_output.append(iris.iris_class)
+    X = np.array(data_input, dtype=float)
+    Y = np.array(data_output, dtype=type(data[1].iris_class))
+    weights_input_hidden = np.random.randn(input_layer_size, hidden_layer_size)
+    weights_hidden_output = np.random.randn(hidden_layer_size, output_layer_size)
+    print(forward_propagation(X,weights_input_hidden,weights_hidden_output))
     neural_network = populate_neural_network(size)
     # for row in range(0, size):
     #   print(neural_network[row])
