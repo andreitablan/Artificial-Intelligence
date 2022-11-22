@@ -34,34 +34,28 @@ def derivative(x):
     return sigmoid(x) * (1 - sigmoid(x))
 
 
-<<<<<<< Updated upstream
-def prepare_error_function(hidden_layer_scores, Y):
-    error_score = 0
+def compute_derivative(hidden_layer_scores, expected, X, weights_input_hidden, weights_hidden_output):
+    output1 = output(X, weights_input_hidden, weights_hidden_output)
+    delta = np.multiply(-(expected - hidden_layer_scores), derivative(output1))
+
+    hidden = np.dot(X, weights_input_hidden)
+    activated_hidden = sigmoid(hidden)
+
+    derivative1 = np.dot(activated_hidden.T, delta)
+    return derivative1
+
+
+def prepare_mean_error(hidden_layer_scores, expected_scores):
+    mean_errors = []
     for index in range(0, len(hidden_layer_scores)):
-        if hidden_layer_scores[index][0] > hidden_layer_scores[index][1] and hidden_layer_scores[index][0] > \
-                hidden_layer_scores[index][2]:
-            element_class = "Iris-setosa"
-        elif hidden_layer_scores[index][1] > hidden_layer_scores[index][0] and hidden_layer_scores[index][1] > \
-                hidden_layer_scores[index][2]:
-            element_class = "Iris-versicolor"
-        else:
-            element_class = "Iris-virginica"
-        error_score += calculate_error(element_class, Y[index])
-    error_score = error_score / len(hidden_layer_scores)
-    return error_score
+        mean_errors.append(mean_error(hidden_layer_scores[index], expected_scores))
+    return mean_errors
 
 
-def calculate_error(act, pred):
-    if act != pred:
-        return 1
-    return 0
-    # diff=act-pred
-    # mean_diff = differences_squared.mean()
-    # return differences_squared
+def mean_error(actual, expected):
+    return 0.5 * sum((actual - expected) ** 2)
 
 
-=======
->>>>>>> Stashed changes
 def create_test_data(data):
     data_i1 = []
     data_i2 = []
@@ -117,6 +111,13 @@ def forward_propagation(X, weights_input_hidden, weights_hidden_output):
     return activated_output
 
 
+def output(X, weights_input_hidden, weights_hidden_output):
+    hidden = np.dot(X, weights_input_hidden)
+    activated_hidden = sigmoid(hidden)
+    output = np.dot(activated_hidden, weights_hidden_output)
+    return output
+
+
 def initialize_parameters():
     size = 11
     input_layer_size = 4
@@ -141,20 +142,21 @@ def initialize_parameters():
     Y = np.array(data_output, dtype=type(data[1].iris_class))
     weights_input_hidden = np.random.randn(input_layer_size, hidden_layer_size)
     weights_hidden_output = np.random.randn(hidden_layer_size, output_layer_size)
-    #print(X)
-    #print(len(X))
+
     hidden_layer_scores = forward_propagation(X, weights_input_hidden, weights_hidden_output)
     print(hidden_layer_scores)
-    #print(len(hidden_layer_scores))
-    #print(Y)
-    #print(len(Y))
 
-    error_score = prepare_error_function(hidden_layer_scores, Y)
+    expected_scores = [0.33, 0.66, 0.99]
+
+    error_score = prepare_mean_error(hidden_layer_scores, expected_scores)
     print(error_score)
 
     # neural_network = populate_neural_network(size)
     # for row in range(0, size):
     #   print(neural_network[row])
+    derivative1=compute_derivative(hidden_layer_scores,expected_scores,X,weights_input_hidden,weights_hidden_output)
+    print(derivative1)
+    #def compute_derivative(hidden_layer_scores, expected, X, weights_input_hidden, weights_hidden_output):
 
 
 if __name__ == '__main__':
