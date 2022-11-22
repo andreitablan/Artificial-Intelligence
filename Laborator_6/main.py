@@ -34,6 +34,7 @@ def derivative(x):
     return sigmoid(x) * (1 - sigmoid(x))
 
 
+<<<<<<< Updated upstream
 def prepare_error_function(hidden_layer_scores, Y):
     error_score = 0
     for index in range(0, len(hidden_layer_scores)):
@@ -59,6 +60,8 @@ def calculate_error(act, pred):
     # return differences_squared
 
 
+=======
+>>>>>>> Stashed changes
 def create_test_data(data):
     data_i1 = []
     data_i2 = []
@@ -119,8 +122,8 @@ def initialize_parameters():
     input_layer_size = 4
     hidden_layer_size = 4
     output_layer_size = 3
-    learning_rate = 0.01
-    number_of_ages = 30
+    learning_rate = 0.1
+    number_of_ages = 1000
     data = read_from_csv()
     test_data = create_test_data(data)
     data_input = []
