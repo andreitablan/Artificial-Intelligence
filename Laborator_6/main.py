@@ -1,6 +1,6 @@
-import string
-from csv import reader
 import random
+from csv import reader
+
 import numpy as np
 
 
@@ -34,12 +34,29 @@ def derivative(x):
     return sigmoid(x) * (1 - sigmoid(x))
 
 
-def mean_squared_error(act, pred):
-    diff = pred - act
-    differences_squared = diff ** 2
-    mean_diff = differences_squared.mean()
+def prepare_error_function(hidden_layer_scores, Y):
+    error_score = 0
+    for index in range(0, len(hidden_layer_scores)):
+        if hidden_layer_scores[index][0] > hidden_layer_scores[index][1] and hidden_layer_scores[index][0] > \
+                hidden_layer_scores[index][2]:
+            element_class = "Iris-setosa"
+        elif hidden_layer_scores[index][1] > hidden_layer_scores[index][0] and hidden_layer_scores[index][1] > \
+                hidden_layer_scores[index][2]:
+            element_class = "Iris-versicolor"
+        else:
+            element_class = "Iris-virginica"
+        error_score += calculate_error(element_class, Y[index])
+    error_score = error_score / len(hidden_layer_scores)
+    return error_score
 
-    return mean_diff
+
+def calculate_error(act, pred):
+    if act != pred:
+        return 1
+    return 0
+    # diff=act-pred
+    # mean_diff = differences_squared.mean()
+    # return differences_squared
 
 
 def create_test_data(data):
@@ -121,9 +138,18 @@ def initialize_parameters():
     Y = np.array(data_output, dtype=type(data[1].iris_class))
     weights_input_hidden = np.random.randn(input_layer_size, hidden_layer_size)
     weights_hidden_output = np.random.randn(hidden_layer_size, output_layer_size)
-    print(forward_propagation(X, weights_input_hidden, weights_hidden_output))
+    #print(X)
+    #print(len(X))
+    hidden_layer_scores = forward_propagation(X, weights_input_hidden, weights_hidden_output)
+    print(hidden_layer_scores)
+    #print(len(hidden_layer_scores))
+    #print(Y)
+    #print(len(Y))
 
-    neural_network = populate_neural_network(size)
+    error_score = prepare_error_function(hidden_layer_scores, Y)
+    print(error_score)
+
+    # neural_network = populate_neural_network(size)
     # for row in range(0, size):
     #   print(neural_network[row])
 
