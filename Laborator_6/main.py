@@ -36,13 +36,14 @@ def derivative(x):
 
 def compute_derivative(hidden_layer_scores, expected, X, weights_input_hidden, weights_hidden_output):
     output1 = output(X, weights_input_hidden, weights_hidden_output)
-    delta = np.multiply(-(expected - hidden_layer_scores), derivative(output1))
-
+    delta1 = np.multiply(-(expected - hidden_layer_scores), derivative(output1))
     hidden = np.dot(X, weights_input_hidden)
+    delta = np.dot(delta1, weights_hidden_output.T) * derivative(hidden)
     activated_hidden = sigmoid(hidden)
 
-    derivative1 = np.dot(activated_hidden.T, delta)
-    return derivative1
+    derivative2 = np.dot(activated_hidden.T, delta1)
+    derivative1 = np.dot(X.T, delta)
+    return derivative1, derivative2
 
 
 def prepare_mean_error(hidden_layer_scores, expected_scores):
@@ -83,24 +84,6 @@ def create_test_data(data):
         test_data.append(data_i3.pop(flower))
 
     return test_data
-
-
-def populate_neural_network(size):
-    neural_network = [[0 for x in range(size)] for y in range(size)]
-    for row in range(0, size):
-        for column in range(0, size):
-            if row < column:
-                if row == 0 or row == 1 or row == 2 or row == 3:
-                    neural_network[row][4] = neural_network[4][row] = round(random.uniform(-1, 1), 2)
-                    neural_network[row][5] = neural_network[5][row] = round(random.uniform(-1, 1), 2)
-                    neural_network[row][6] = neural_network[6][row] = round(random.uniform(-1, 1), 2)
-                    neural_network[row][7] = neural_network[7][row] = round(random.uniform(-1, 1), 2)
-                if row == 8 or row == 9 or row == 10:
-                    neural_network[row][4] = neural_network[4][row] = round(random.uniform(-1, 1), 2)
-                    neural_network[row][5] = neural_network[5][row] = round(random.uniform(-1, 1), 2)
-                    neural_network[row][6] = neural_network[6][row] = round(random.uniform(-1, 1), 2)
-                    neural_network[row][7] = neural_network[7][row] = round(random.uniform(-1, 1), 2)
-    return neural_network
 
 
 def forward_propagation(X, weights_input_hidden, weights_hidden_output):
@@ -144,19 +127,14 @@ def initialize_parameters():
     weights_hidden_output = np.random.randn(hidden_layer_size, output_layer_size)
 
     hidden_layer_scores = forward_propagation(X, weights_input_hidden, weights_hidden_output)
-    print(hidden_layer_scores)
 
     expected_scores = [0.33, 0.66, 0.99]
 
     error_score = prepare_mean_error(hidden_layer_scores, expected_scores)
     print(error_score)
 
-    # neural_network = populate_neural_network(size)
-    # for row in range(0, size):
-    #   print(neural_network[row])
-    derivative1=compute_derivative(hidden_layer_scores,expected_scores,X,weights_input_hidden,weights_hidden_output)
-    print(derivative1)
-    #def compute_derivative(hidden_layer_scores, expected, X, weights_input_hidden, weights_hidden_output):
+    derivative1, derivative2 = compute_derivative(hidden_layer_scores, expected_scores, X, weights_input_hidden,
+                                                  weights_hidden_output)
 
 
 if __name__ == '__main__':
