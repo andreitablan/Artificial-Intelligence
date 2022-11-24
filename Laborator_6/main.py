@@ -127,14 +127,22 @@ def initialize_parameters():
     weights_hidden_output = np.random.randn(hidden_layer_size, output_layer_size)
 
     hidden_layer_scores = forward_propagation(X, weights_input_hidden, weights_hidden_output)
+    print("scores after activation:")
+    print(hidden_layer_scores)
 
     expected_scores = [0.33, 0.66, 0.99]
 
     error_score = prepare_mean_error(hidden_layer_scores, expected_scores)
+    print("error scores for every input:")
     print(error_score)
 
     derivative1, derivative2 = compute_derivative(hidden_layer_scores, expected_scores, X, weights_input_hidden,
                                                   weights_hidden_output)
+
+    print("derivative1:")
+    print(derivative1)
+    print("derivative2:")
+    print(derivative2)
 
 
 if __name__ == '__main__':
