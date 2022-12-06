@@ -1,23 +1,40 @@
 import gymnasium as gym
-import numpy as np
 
 gym.make('CliffWalking-v0')
 
-def print_Qtable(Q):
-    for line in range(0,len(Q)):
-        print(Q[line])
 
-def update_Qtable(Q, state,states, score_x_minus_1, score_x_plus_1, score_y_minus_1, score_y_plus_1):
-    #staga, dreapta, jos, sus
-    counter=0
+def apply_discount_Qtable(Q, state, states):
+    counter = 0
     for aux_state in states:
         if aux_state == state:
-            Q[counter][0]=score_x_minus_1
-            Q[counter][1]=score_x_plus_1
-            Q[counter][2]=score_y_minus_1
-            Q[counter][3]=score_y_plus_1
             break
-        counter+=1
+        counter += 1
+
+    for line in range(0, len(Q)):
+        if line > counter - 1:
+            break
+        for column in range(0, len(Q[line])):
+            Q[line][column] -= 1
+
+    return Q
+
+
+def print_Qtable(Q):
+    for line in range(0, len(Q)):
+        print(Q[line])
+
+
+def update_Qtable(Q, state, states, score_x_minus_1, score_x_plus_1, score_y_minus_1, score_y_plus_1):
+    # staga, dreapta, jos, sus
+    counter = 0
+    for aux_state in states:
+        if aux_state == state:
+            Q[counter][0] = score_x_minus_1
+            Q[counter][1] = score_x_plus_1
+            Q[counter][2] = score_y_minus_1
+            Q[counter][3] = score_y_plus_1
+            break
+        counter += 1
     return Q
 
 
@@ -64,9 +81,11 @@ def decision(states, Q, Rewards):
             state["occupied"] = True
             break
 
-    Q = update_Qtable(Q, last_state,states, score_x_minus_1, score_x_plus_1, score_y_minus_1, score_y_plus_1)
-    print_Qtable(Q)
+    Q = update_Qtable(Q, last_state, states, score_x_minus_1, score_x_plus_1, score_y_minus_1, score_y_plus_1)
+    # print_Qtable(Q)
 
+    Q = apply_discount_Qtable(Q, state, states)
+    # print_Qtable(Q)
     return states
 
 
@@ -90,9 +109,9 @@ def slove_problem():
                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                [0, cliff, cliff, cliff, cliff, cliff, cliff, cliff, cliff, cliff, cliff, end]
                ]
-    #Q = np.zeros((48, 4))
+    # Q = np.zeros((48, 4))
 
-    Q=[[0 for index in range(0,4)] for index2 in range(0,48)]
+    Q = [[0 for index in range(0, 4)] for index2 in range(0, 48)]
 
     print(states)
     states = initialize_position(states)
