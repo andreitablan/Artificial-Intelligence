@@ -4,6 +4,14 @@ import numpy as np
 gym.make('CliffWalking-v0')
 
 
+def initialize_position(states):
+    for state in states:
+        if state['x'] == 0 and state['y'] == 0:
+            state['occupied'] = True
+            break
+    return states
+
+
 def decision(states, Q, Rewards):
     x = 0
     y = 0
@@ -13,19 +21,24 @@ def decision(states, Q, Rewards):
             y = state["y"]
             state["occupied"] = False
             break
-    max_score = max(Rewards[x - 1][y - 1], Rewards[x + 1][y + 1], Rewards[x - 1][y], Rewards[x][y - 1])
-    if max_score == Rewards[x - 1][y - 1]:
+
+    score_1 = score_2 = score_3 = -1000000
+
+    if x - 1 >= 0:
+        score_1 = Rewards[x - 1][y]
         x = x - 1
-        y = y - 1
-    elif max_score == Rewards[x + 1][y + 1]:
-        x = x + 1
-        y = y + 1
-    elif max_score == Rewards[x - 1][y]:
-        x = x - 1
-        y = y
-    else:
-        x = x
-        y = y - 1
+    if x + 1 <= 12:
+        score_2 = Rewards[x + 1][y]
+        if score_2 > score_1:
+            x = x + 1
+    if y - 1 >= 0:
+        score_3 = Rewards[x - 1][y]
+        if score_3 > score_2 and score_3 > score_1:
+            y = y - 1
+    if y + 1 <= 12:
+        score_4 = Rewards[x][y + 1]
+        if score_4 > score_3 and score_4 > score_2 and score_4 > score_1:
+            y = y + 1
 
     for state in states:
         if state["x"] == x and state["y"] == y:
@@ -56,6 +69,11 @@ def slove_problem():
                [0, cliff, cliff, cliff, cliff, cliff, cliff, cliff, cliff, cliff, cliff, end]
                ]
     Q = np.zeros((48, 4))
+    print(states)
+    states = initialize_position(states)
+    print(states)
+    states = decision(states, Q, Rewards)
+    print(states)
 
 
 if __name__ == '__main__':
