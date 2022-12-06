@@ -3,6 +3,23 @@ import numpy as np
 
 gym.make('CliffWalking-v0')
 
+def print_Qtable(Q):
+    for line in range(0,len(Q)):
+        print(Q[line])
+
+def update_Qtable(Q, state,states, score_x_minus_1, score_x_plus_1, score_y_minus_1, score_y_plus_1):
+    #staga, dreapta, jos, sus
+    counter=0
+    for aux_state in states:
+        if aux_state == state:
+            Q[counter][0]=score_x_minus_1
+            Q[counter][1]=score_x_plus_1
+            Q[counter][2]=score_y_minus_1
+            Q[counter][3]=score_y_plus_1
+            break
+        counter+=1
+    return Q
+
 
 def initialize_position(states):
     for state in states:
@@ -15,35 +32,40 @@ def initialize_position(states):
 def decision(states, Q, Rewards):
     x = 0
     y = 0
+
     for state in states:
         if state["occupied"] is True:
             x = state["x"]
             y = state["y"]
+            last_state = state
             state["occupied"] = False
             break
 
-    score_1 = score_2 = score_3 = -1000000
+    score_x_minus_1 = score_x_plus_1 = score_y_minus_1 = score_y_plus_1 = -1000000
 
     if x - 1 >= 0:
-        score_1 = Rewards[x - 1][y]
+        score_x_minus_1 = Rewards[x - 1][y]
         x = x - 1
     if x + 1 <= 12:
-        score_2 = Rewards[x + 1][y]
-        if score_2 > score_1:
+        score_x_plus_1 = Rewards[x + 1][y]
+        if score_x_plus_1 > score_x_minus_1:
             x = x + 1
     if y - 1 >= 0:
-        score_3 = Rewards[x - 1][y]
-        if score_3 > score_2 and score_3 > score_1:
+        score_y_minus_1 = Rewards[x - 1][y]
+        if score_y_minus_1 > score_x_plus_1 and score_y_minus_1 > score_x_minus_1:
             y = y - 1
     if y + 1 <= 12:
-        score_4 = Rewards[x][y + 1]
-        if score_4 > score_3 and score_4 > score_2 and score_4 > score_1:
+        score_y_plus_1 = Rewards[x][y + 1]
+        if score_y_plus_1 > score_y_minus_1 and score_y_plus_1 > score_x_plus_1 and score_y_plus_1 > score_x_minus_1:
             y = y + 1
 
     for state in states:
         if state["x"] == x and state["y"] == y:
             state["occupied"] = True
             break
+
+    Q = update_Qtable(Q, last_state,states, score_x_minus_1, score_x_plus_1, score_y_minus_1, score_y_plus_1)
+    print_Qtable(Q)
 
     return states
 
@@ -68,7 +90,10 @@ def slove_problem():
                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                [0, cliff, cliff, cliff, cliff, cliff, cliff, cliff, cliff, cliff, cliff, end]
                ]
-    Q = np.zeros((48, 4))
+    #Q = np.zeros((48, 4))
+
+    Q=[[0 for index in range(0,4)] for index2 in range(0,48)]
+
     print(states)
     states = initialize_position(states)
     print(states)
