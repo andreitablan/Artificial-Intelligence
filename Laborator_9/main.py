@@ -74,7 +74,7 @@ def decision_loop(states, Q, Rewards, decade):
         while not is_final(states):
             counter += 1
             states, Q, Rewards = decision(states, Q, Rewards, decade)
-        #print_Qtable(Q)
+        print(states)
         return counter
     return 0
 
@@ -84,8 +84,6 @@ def decision(states, Q, Rewards, decade):
 
     initial_x = 0
     initial_y = 0
-    x = 0
-    y = 0
 
     for state in states:
         if state["occupied"] is True:
@@ -147,10 +145,7 @@ def decision(states, Q, Rewards, decade):
             break
 
     Q = update_Qtable(Q, last_state, states, score_x_minus_1, score_x_plus_1, score_y_minus_1, score_y_plus_1)
-    # print_Qtable(Q)
 
-
-    #print("--------------------------------------")
     return states, Q, Rewards
 
 
