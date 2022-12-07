@@ -46,7 +46,7 @@ def print_Qtable(Q):
 
 
 def update_Qtable(Q, state, states, score_x_minus_1, score_x_plus_1, score_y_minus_1, score_y_plus_1):
-    # staga, dreapta, sus, jos
+    # stang, dreapta, sus, jos
     counter = 0
     for aux_state in states:
         if aux_state == state:
