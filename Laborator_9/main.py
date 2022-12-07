@@ -1,9 +1,28 @@
-import gymnasium as gym
 import random
+
+import gymnasium as gym
 
 gym.make('CliffWalking-v0')
 
 list_counter = []
+
+
+def clear_tables(states):
+    for state in states:
+        if state['x'] == 11 and state['y'] == 3:
+            state['occupied'] = False
+        if state['x'] == 3 and state['y'] == 0:
+            state['occupied'] = True
+
+    Q = [[0 for index in range(0, 4)] for index2 in range(0, 48)]
+    return states, Q
+
+
+def is_final(states):
+    for state in states:
+        if state['x'] == 11 and state['y'] == 3 and state['occupied'] is True:
+            return True
+    return False
 
 
 def update_global_list(element):
@@ -11,13 +30,13 @@ def update_global_list(element):
     list_counter.append(element)
 
 
-def apply_discount_Qtable(Q):
+def apply_discount_Qtable(Q, decade):
     global list_counter
     for element in list_counter:
-        Q[element][0] -= 1
-        Q[element][1] -= 1
-        Q[element][2] -= 1
-        Q[element][3] -= 1
+        Q[element][0] -= decade
+        Q[element][1] -= decade
+        Q[element][2] -= decade
+        Q[element][3] -= decade
     return Q
 
 
@@ -49,8 +68,19 @@ def initialize_position(states):
     return states
 
 
-def decision(states, Q, Rewards):
-    Q = apply_discount_Qtable(Q)
+def decision_loop(states, Q, Rewards, decade):
+    if not is_final(states):
+        counter = 0
+        while not is_final(states):
+            counter += 1
+            states, Q, Rewards = decision(states, Q, Rewards, decade)
+        #print_Qtable(Q)
+        return counter
+    return 0
+
+
+def decision(states, Q, Rewards, decade):
+    Q = apply_discount_Qtable(Q, decade)
 
     initial_x = 0
     initial_y = 0
@@ -118,10 +148,18 @@ def decision(states, Q, Rewards):
 
     Q = update_Qtable(Q, last_state, states, score_x_minus_1, score_x_plus_1, score_y_minus_1, score_y_plus_1)
     # print_Qtable(Q)
-    print_Qtable(Q)
 
-    print("--------------------------------------")
-    return states
+
+    #print("--------------------------------------")
+    return states, Q, Rewards
+
+
+def run_ages(ages, states, Q, Rewards, decade):
+    age = 0
+    while age < ages:
+        age += 1
+        states, Q = clear_tables(states)
+        print(decision_loop(states, Q, Rewards, decade))
 
 
 def slove_problem():
@@ -144,17 +182,13 @@ def slove_problem():
                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                [0, cliff, cliff, cliff, cliff, cliff, cliff, cliff, cliff, cliff, cliff, end]
                ]
-    # Q = np.zeros((48, 4))
 
     Q = [[0 for index in range(0, 4)] for index2 in range(0, 48)]
 
-    print(states)
+    #(states)
     states = initialize_position(states)
-    print(states)
-    states = decision(states, Q, Rewards)
-    print(states)
-    states = decision(states, Q, Rewards)
-    print(states)
+
+    run_ages(ages, states, Q, Rewards, decade)
 
 
 if __name__ == '__main__':
