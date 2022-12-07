@@ -92,7 +92,7 @@ def decision(states, Q, Rewards, decade):
             last_state = state
             state["occupied"] = False
             break
-    score_x_minus_1 = score_x_plus_1 = score_y_minus_1 = score_y_plus_1 = -1000000
+    score_x_minus_1 = score_x_plus_1 = score_y_minus_1 = score_y_plus_1 = -100
 
     if initial_x - 1 >= 0:
         score_x_minus_1 = Rewards[initial_y][initial_x - 1]
