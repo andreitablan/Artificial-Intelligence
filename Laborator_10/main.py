@@ -2,16 +2,16 @@ import pprint
 
 from rdflib import Graph
 import nltk
-from nltk.corpus import treebank
+from nltk.corpus import wordnet as wn
 
 def test_nlth():
-    sentence = """At eight o'clock on Thursday morning
-    ... Arthur didn't feel very good."""
-    tokens = nltk.word_tokenize(sentence)
-    tagged = nltk.pos_tag(tokens)
-    nltk.chunk.ne_chunk(tagged)
-    t = treebank.parsed_sents('wsj_0001.mrg')[0]
-    t.draw()
+    #nltk.download('omw-1.4')
+    #nltk.download('wordnet')
+    wn.synsets('dog')
+    wn.synsets('dog', pos=wn.VERB)
+    wn.synset('dog.n.01')
+    print(wn.synset('dog.n.01').definition())
+    print(wn.synset('dog.n.01').examples()[0])
 
 def print_rdf():
     g = Graph()

@@ -180,7 +180,6 @@ def slove_problem():
 
     Q = [[0 for index in range(0, 4)] for index2 in range(0, 48)]
 
-    #(states)
     states = initialize_position(states)
 
     run_ages(ages, states, Q, Rewards, decade)
