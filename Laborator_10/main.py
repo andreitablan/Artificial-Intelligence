@@ -1,5 +1,7 @@
 import pprint
-
+import rdflib
+import lightrdf
+from owlready2 import *
 import rdflib.term
 from rdflib import Graph
 import nltk
@@ -17,13 +19,27 @@ def ok_nlth():
 
 
 def print_rdf():
-    g = Graph()
+    graph = rdflib.Graph()
+    graph.open("store", create=True)
+    graph.parse("food.rdf")
+    # print out all the triples in the graph
+    for subject, predicate, object in graph:
+        print(subject, predicate, object)
+        print("------------------------------")
+
+    g = rdflib.Graph()
     g.parse("food.rdf")
     for stmt in g:
-        for index in range(0,len(stmt)):
+        for index in range(0, len(stmt)):
             if str(type(stmt[index])) != '<class \'rdflib.term.BNode\'>':
                 print(stmt[index])
+
         print("-----------------------AAA---------------")
+
+    f = open('food.rdf', 'rb')
+    doc = lightrdf.RDFDocument(f, parser=lightrdf.xml.PatternParser)
+    for (s, p, o) in doc.search_triples(None, None, None):
+        print(s, p, o)
 
 
 if __name__ == '__main__':
