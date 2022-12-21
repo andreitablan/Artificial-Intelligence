@@ -9,7 +9,7 @@ import nltk
 from nltk.corpus import wordnet as wn
 
 
-def ok_nlth():
+def exemple_nlth():
     # nltk.download('omw-1.4')
     # nltk.download('wordnet')
     wn.synsets('dog')
@@ -20,10 +20,18 @@ def ok_nlth():
 
 
 def get_synset(word):
+    '''
+    :param word: a string parameter
+    :return: the synsets of the word(complete form)
+    '''
     return wn.synsets(word)
 
 
 def get_first_synonim(word):
+    '''
+    :param word:
+    :return: the name of the most common synonyms of a word if it exists
+    '''
     if len(wn.synsets(word)) > 1:
         syn = wn.synsets(word)[1]
         name = syn.name()
@@ -36,11 +44,18 @@ def get_first_synonim(word):
 
 
 def print_synset():
+    '''
+    Display the synsets a word entered at the command line belongs to
+    '''
     answer = input("Write a word to get it's synsets: ")
     print(get_synset(answer.lower()))
 
 
-def print_rdf():
+def get_relations():
+    '''
+    Prints and returns triplets
+    :return: a list with triplets: concept1-relation-concept2
+    '''
     graph = Graph()
     graph.parse("food.rdf")
     triplet_relation = []
@@ -64,6 +79,13 @@ def print_rdf():
 
 
 def ask_user(relations):
+    '''
+    It generates random questions for the user using concept1-relation-concept2
+    There are two cases:
+        -It doesn't search for the synonyms of every word in Wordnet
+        -It searches for the first synonym of concept1/relation/concept2 and for every synonym of <answer>
+    :param relations: triplets concept1-relation-concept2
+    '''
     answer = ""
     while answer != "quit":
         random_index = randint(0, len(relations))
@@ -113,6 +135,7 @@ def ask_user(relations):
 
 
 if __name__ == '__main__':
-    relations = print_rdf()
-    # print_synset()
+    # exemple_nlth
+    relations = get_relations()
+    print_synset()
     ask_user(relations)
